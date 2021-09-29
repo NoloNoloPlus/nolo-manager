@@ -1,5 +1,5 @@
 <template>
     <c-flex align="center" justify="center">
-        <LoginForm />
+        <ClientForm/>
     </c-flex>
 </template>

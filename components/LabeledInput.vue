@@ -1,7 +1,7 @@
 <template>
-    <c-form-control>
+    <c-form-control w="100%">
         <c-form-label for="email">{{label}}</c-form-label>
-        <c-input :type="type"/>
+        <c-input :type="type" :multiple="multiple"/>
         <c-form-helper-text id="email-helper-text">
             {{helper}}
         </c-form-helper-text>
@@ -23,6 +23,10 @@ export default ({
         helper: {
             type: String,
             default: ''
+        },
+        multiple: {
+            type: Boolean,
+            default: false
         }
     },
     setup(props) {
