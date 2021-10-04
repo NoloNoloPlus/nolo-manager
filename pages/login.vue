@@ -3,3 +3,13 @@
         <LoginForm />
     </c-flex>
 </template>
+
+<script>
+    export default {
+        head() {
+            return {
+                title: "Login"
+            }
+        }
+    }
+</script>
