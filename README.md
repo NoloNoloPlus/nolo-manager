@@ -1,4 +1,4 @@
-# nolo-office
+# nolo-manager
 
 The back-office is responsible of the insertion and deletion of products, prices and descriptions managing. Flexibility and speed are important.
 
