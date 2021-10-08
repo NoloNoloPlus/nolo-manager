@@ -10,7 +10,6 @@
             <c-text>{{client.address}}</c-text>
             <c-text>{{client.preferences}}</c-text>
         </div>
-        
     </c-box>
 </template>
 
