@@ -18,7 +18,7 @@
             <c-input id="images" type="file" v-model="images" multiple/>
         </c-form-control>
         <c-form-control pt="1em">
-            <c-button variant-color="blue" @click="addProduct">Login</c-button>
+            <c-button variant-color="blue" @click="addProduct">Aggiungi</c-button>
         </c-form-control>
     </c-box>
 </template>
