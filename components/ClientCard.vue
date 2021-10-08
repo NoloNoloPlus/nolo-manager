@@ -38,7 +38,7 @@
                 address: response.results[0].location.street.name,
                 preferences: "preferenze..."
             }
-            console.log(this.client.avatar)
+            //console.log(this.client.avatar)
         },
         fetchOnServer: false
 
