@@ -37,7 +37,12 @@
                 </NuxtLink>
             </c-menu-list>
         </c-menu>
+        <NuxtLink to="/login">
+            <c-heading v-if="this.$store.state.userTokens != null" size="md">Logged</c-heading>
+            <c-heading v-else size="md">Login</c-heading>
+        </NuxtLink> 
 
 
     </c-flex>
 </template>
+
