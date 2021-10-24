@@ -1,5 +1,5 @@
 <template>
-    <c-box border-width="1px" w="20em" rounded="md" p="2em" m="1em" height="30em">
+    <c-box border-width="1px" w="20em" rounded="md" p="2em" m="1em" height="30em" @click="navigate">
         <div v-if="$fetchState.pending">fetching...</div>
         <div v-else>
             <c-image width="100%" height="20em" objectFit="cover" :src="this.product.coverImage" :alt="this.product.name"></c-image>
@@ -31,7 +31,14 @@ export default {
         this.product = response;
         console.log(this.product.coverImage)
     },
-    fetchOnServer: false
+    fetchOnServer: false,
+    methods: {
+        navigate() {
+            this.$router.push({
+                path: `/products/${this.id}`,
+            })
+        }
+    },
 }
 </script>
 
