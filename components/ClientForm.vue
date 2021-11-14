@@ -2,20 +2,20 @@
     <c-box w="40em" p="5" maxW="90vw">
         <c-heading>Inserimento cliente</c-heading>
         <c-form-control w="100%">
-            <c-form-label for="username">Username</c-form-label>
-            <c-input id="username" type="text" v-model="username" />
+            <c-form-label for="name">Name</c-form-label>
+            <c-input id="name" type="text" v-model="name" />
         </c-form-control>
         <c-form-control w="100%">
             <c-form-label for="password">Password</c-form-label>
             <c-input id="password" type="password" v-model="password" />
         </c-form-control>
         <c-form-control w="100%">
-            <c-form-label for="address">Address</c-form-label>
-            <c-input id="address" type="text" v-model="address" />
+            <c-form-label for="email">Email</c-form-label>
+            <c-input id="email" type="email" v-model="email" />
         </c-form-control>
         <c-form-control w="100%">
-            <c-form-label for="avatar">Avatar</c-form-label>
-            <c-input id="avatar" type="file" v-model="avatar" />
+            <c-form-label for="role">Role</c-form-label>
+            <c-input id="role" type="text" v-model="role" />
         </c-form-control>
         <c-form-control w="100%">
             <c-form-label for="preferences">Preferenze</c-form-label>
@@ -31,23 +31,27 @@
     export default {
         data() {
             return {
-                username: "",
+                name: "",
                 password: "f",
-                address: "",
-                avatar: "",
+                role: "",
+                email: "",
                 preferences: "",
             };
         },
         methods: {
-            handleClientSubmit() {
+            async handleClientSubmit() {
                 const client = {
-                    username: this.username,
+                    name: this.name,
                     password: this.password,
-                    address: this.address,
-                    avatar: this.avatar,
-                    preferences: this.preferences,
+                    role: this.role,
+                    email: this.email
                 };
                 //this.$emit("client-submit", client);
+                await this.$axios.$post(`https://site202114.tw.cs.unibo.it/v1/users/`, client).then(response => {
+                    console.log(response);
+                }).catch(error => {
+                    console.log(error);
+                });
                 console.log(client)
             },
         }
