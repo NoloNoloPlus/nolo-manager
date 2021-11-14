@@ -5,9 +5,9 @@
             <c-heading as="h4" size="md">Client {{id}}</c-heading>
             <c-stack is-inline align="center">
                 <c-avatar :name="client.username" :src="client.avatar" size="lg"></c-avatar>
-                <c-heading size="lg">{{client.username}}</c-heading>
+                <c-heading size="lg">{{client.name}}</c-heading>
             </c-stack>
-            <c-text>{{client.address}}</c-text>
+            <c-text>{{client.email}}</c-text>
             <c-text>{{client.preferences}}</c-text>
         </div>
     </c-box>
@@ -17,7 +17,7 @@
     export default {
         props:{
             id: {
-                type: Number,
+                type: String,
                 required: true
             }
         },
@@ -29,15 +29,9 @@
             }
         },
         async fetch() {
-            let response = await this.$http.$get('https://randomuser.me/api/?seed='+this.id)
-            this.client = {
-                id: response.info.seed,
-                username: response.results[0].login.username,
-                avatar: response.results[0].picture.medium,
-                address: response.results[0].location.street.name,
-                preferences: "preferenze..."
-            }
-            //console.log(this.client.avatar)
+            let response = await this.$axios.$get(`https://site202114.tw.cs.unibo.it/v1/users/${this.id}`);
+            //console.log(response);
+            this.client = response;
         },
         fetchOnServer: false
 

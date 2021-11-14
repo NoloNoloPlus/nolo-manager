@@ -29,7 +29,7 @@ export default {
     async fetch() {
         let response = await this.$axios.$get(`https://site202114.tw.cs.unibo.it/v1/products/${this.id}`);
         this.product = response;
-        console.log(this.product.coverImage)
+        //console.log(this.product.coverImage)
     },
     fetchOnServer: false,
     methods: {
