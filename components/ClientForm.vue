@@ -15,11 +15,13 @@
         </c-form-control>
         <c-form-control w="100%">
             <c-form-label for="role">Role</c-form-label>
-            <c-input id="role" type="text" v-model="role" />
-        </c-form-control>
-        <c-form-control w="100%">
-            <c-form-label for="preferences">Preferenze</c-form-label>
-            <c-input id="preferences" type="text" v-model="preferences" />
+            <c-select id="role" placeholder="Select role" v-model="role">
+                <option value="user">User</option>
+                <option value="employee">Employee</option>
+                <option value="manager">Manager</option>
+                <option value="admin">Admin</option>
+            </c-select>
+
         </c-form-control>
         <c-form-control pt="1em">
             <c-button variant-color="blue" @click="handleClientSubmit">Add</c-button>
@@ -32,10 +34,9 @@
         data() {
             return {
                 name: "",
-                password: "f",
+                password: "",
                 role: "",
                 email: "",
-                preferences: "",
             };
         },
         methods: {

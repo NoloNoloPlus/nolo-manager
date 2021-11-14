@@ -15,7 +15,11 @@
             <c-button variant-color="blue" @click="login">Login</c-button>
         </c-form-control>
 
-        <c-text pt="1em">{{errorMessage}}</c-text>
+        <c-box mt="1em">
+            <c-alert v-if="isInvalid" status="error">{{errorMessage}}</c-alert>
+            <c-alert v-if="!isInvalid && errorMessage != ''" status="success">Login successful</c-alert>    
+        </c-box>    
+        
         
     </c-box>
 
@@ -60,6 +64,7 @@
                 if (response.status === 200) {
                     this.errorMessage = "Operation successful";
                     this.isInvalid = false;
+                    localStorage.setItem("userTokens", response.data.tokens);
                     this.$axios.setToken(response.data.tokens.access.token, "Bearer");
                     this.$store.commit("setUserTokens", response.data.tokens);
                     //console.log(this.$store.state.userTokens);

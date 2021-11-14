@@ -2,9 +2,11 @@
     <c-box border-width="1px" w="20em" rounded="md" p="2em" m="1em">
         <p v-if="$fetchState.pending">pending...</p>
         <div v-else>
-            <c-heading as="h4" size="md">Client {{id}}</c-heading>
+            <c-tag size="sm">{{client.role}}</c-tag>
+            <c-heading s="h4" size="xs">{{client.id}}</c-heading>
+            
             <c-stack is-inline align="center">
-                <c-avatar :name="client.username" :src="client.avatar" size="lg"></c-avatar>
+                <c-avatar :name="client.name" :src="client.avatar" size="lg"></c-avatar>
                 <c-heading size="lg">{{client.name}}</c-heading>
             </c-stack>
             <c-text>{{client.email}}</c-text>
@@ -29,11 +31,19 @@
             }
         },
         async fetch() {
-            let response = await this.$axios.$get(`https://site202114.tw.cs.unibo.it/v1/users/${this.id}`);
+            await this.$axios.$get(`https://site202114.tw.cs.unibo.it/v1/users/${this.id}`)
+                .then(response => {
+                    this.client = response
+                })
+                .catch(error => {
+                    console.log(error)
+                })
             //console.log(response);
-            this.client = response;
         },
         fetchOnServer: false
 
     }
 </script>
+
+<style>
+</style>
