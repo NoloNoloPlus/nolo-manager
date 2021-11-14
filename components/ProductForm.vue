@@ -34,7 +34,7 @@
             }
         },
         methods: {
-            addProduct() {
+            async addProduct() {
                 const product = {
                     name: this.name,
                     description: this.description,
@@ -42,6 +42,15 @@
                     images: this.images
                 }
                 console.log(product);
+
+                this.$axios.post('https://site202114.tw.cs.unibo.it/v1/products/', {
+                    name: this.name,
+                    description: this.description
+                }).then(response => {
+                    console.log(response);
+                }).catch(error => {
+                    console.log(error);
+                });
             }
         }
     }
