@@ -45,6 +45,10 @@
             <c-text>Updated at {{this.product.updatedAt}}</c-text>
             <c-text>Created at {{this.product.createdAt}}</c-text>
 
+            <c-form-control pt="1em">
+                <c-button variant-color="red" @click="removeProduct()">Remove product</c-button>
+            </c-form-control>
+
         </c-flex>
     </c-flex>
 </template>
@@ -143,6 +147,13 @@
             },
             onDayClick() {
                 this.quotePrice = '';
+            },
+            async removeProduct() {
+                let response = await this.$axios.$delete(`https://site202114.tw.cs.unibo.it/v1/products/${this.id}`).catch(err => {
+                    console.log(err)
+                });
+                console.log(response)
+                this.$router.push('/products')
             }
         }
     }

@@ -2,7 +2,8 @@
     <c-box border-width="1px" w="20em" rounded="md" p="2em" m="1em">
         <p v-if="$fetchState.pending">pending...</p>
         <div v-else>
-            <c-tag size="sm">{{client.role}}</c-tag>
+            <c-tag v-if="client.role == 'admin'" size="sm" variant-color="cyan">{{client.role}}</c-tag>
+            <c-tag v-else size="sm">{{client.role}}</c-tag>
             <c-heading s="h4" size="xs">{{client.id}}</c-heading>
             
             <c-stack is-inline align="center">
