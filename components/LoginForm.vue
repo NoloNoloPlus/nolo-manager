@@ -62,12 +62,15 @@
                 let response = await this.$axios.post("https://site202114.tw.cs.unibo.it/v1/auth/login", user);
                 console.log(response);
                 if (response.status === 200) {
+                    const userTokens = JSON.parse(JSON.stringify(response.data.tokens))
                     this.errorMessage = "Operation successful";
                     this.isInvalid = false;
-                    localStorage.setItem("userTokens", response.data.tokens);
-                    this.$axios.setToken(response.data.tokens.access.token, "Bearer");
-                    this.$store.commit("setUserTokens", response.data.tokens);
-                    //console.log(this.$store.state.userTokens);
+                    localStorage.setItem("userTokens", JSON.stringify(userTokens));
+                    localStorage.setItem("userEmail", user.email);
+                    this.$axios.setToken(userTokens.access.token, "Bearer");
+                    this.$store.commit("setUserTokens", userTokens);
+                    console.log("user tokens:")
+                    console.log(userTokens);
                 }
             },
         },

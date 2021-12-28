@@ -38,11 +38,31 @@
             </c-menu-list>
         </c-menu>
         <NuxtLink to="/login">
-            <c-heading v-if="this.$store.state.userTokens != null" size="md">Logged</c-heading>
+            <c-heading v-if="this.$store.state.userTokens != null" size="sm" align="center">Logged: <br/> {{this.email}}</c-heading>
             <c-heading v-else size="md">Login</c-heading>
         </NuxtLink> 
 
 
     </c-flex>
 </template>
+
+<script>
+    export default {
+        data() {
+            return {
+                email: ""
+            }
+        },
+        beforeMount() {
+            var userTokens = localStorage.getItem('userTokens')
+            if (userTokens) {
+                userTokens = JSON.parse(userTokens)
+                this.$axios.setToken(userTokens.access.token, "Bearer");
+                this.$store.commit("setUserTokens", userTokens);
+
+                this.email = localStorage.getItem('userEmail')
+            }
+        }
+    }
+</script>
 
