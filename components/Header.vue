@@ -57,6 +57,8 @@
             var userTokens = localStorage.getItem('userTokens')
             if (userTokens) {
                 userTokens = JSON.parse(userTokens)
+                console.log("setting user tokens by header")
+                console.log(userTokens)
                 this.$axios.setToken(userTokens.access.token, "Bearer");
                 this.$store.commit("setUserTokens", userTokens);
 

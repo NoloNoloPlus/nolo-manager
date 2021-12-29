@@ -7,8 +7,9 @@
             <c-heading s="h4" size="xs">{{client.id}}</c-heading>
             
             <c-stack is-inline align="center">
-                <c-avatar :name="client.name" :src="client.avatar" size="lg"></c-avatar>
-                <c-heading size="lg">{{client.name}}</c-heading>
+                <c-avatar :name="client.firstName + ' ' + client.lastName" :src="client.avatar" size="lg"></c-avatar>
+                <c-heading size="md">{{client.firstName}}</c-heading>
+                <c-heading size="md">{{client.lastName}}</c-heading>
             </c-stack>
             <c-text>{{client.email}}</c-text>
             <c-text>{{client.preferences}}</c-text>

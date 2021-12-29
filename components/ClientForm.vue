@@ -2,8 +2,12 @@
     <c-box w="40em" p="5" maxW="90vw">
         <c-heading>Inserimento cliente</c-heading>
         <c-form-control w="100%">
-            <c-form-label for="name">Name</c-form-label>
-            <c-input id="name" type="text" v-model="name" />
+            <c-form-label for="name">First Name</c-form-label>
+            <c-input id="firstName" type="text" v-model="firstName" />
+        </c-form-control>
+        <c-form-control w="100%">
+            <c-form-label for="name">Last Name</c-form-label>
+            <c-input id="lastName" type="text" v-model="lastName" />
         </c-form-control>
         <c-form-control w="100%">
             <c-form-label for="password">Password</c-form-label>
@@ -12,6 +16,14 @@
         <c-form-control w="100%">
             <c-form-label for="email">Email</c-form-label>
             <c-input id="email" type="email" v-model="email" />
+        </c-form-control>
+        <c-form-control w="100%">
+            <c-form-label for="email">Address Line 1</c-form-label>
+            <c-input id="text" type="text" v-model="address.street.line1" />
+        </c-form-control>
+        <c-form-control w="100%">
+            <c-form-label for="email">Address Line 2</c-form-label>
+            <c-input id="text" type="text" v-model="address.street.line2" />
         </c-form-control>
         <c-form-control w="100%">
             <c-form-label for="role">Role</c-form-label>
@@ -33,19 +45,32 @@
     export default {
         data() {
             return {
-                name: "",
+                firstName: "",
+                lastName: "",
                 password: "",
                 role: "",
                 email: "",
+                address: {
+                    street: {
+                        line1: "",
+                        line2: ""
+                    },
+                    city: "none",
+                    state: "none",
+                    zip: "none",
+                    country: "none"
+                }
             };
         },
         methods: {
             async handleClientSubmit() {
                 const client = {
-                    name: this.name,
+                    firstName: this.firstName,
+                    lastName: this.lastName,
                     password: this.password,
                     role: this.role,
-                    email: this.email
+                    email: this.email,
+                    address: this.address
                 };
                 //this.$emit("client-submit", client);
                 await this.$axios.$post(`https://site202114.tw.cs.unibo.it/v1/users/`, client).then(response => {
