@@ -12,6 +12,8 @@
 </template>
 
 <script>
+    import config from '../config'
+
 export default {
     props:{
         id: {
@@ -27,7 +29,7 @@ export default {
         }
     },
     async fetch() {
-        let response = await this.$axios.$get(`https://site202114.tw.cs.unibo.it/v1/products/${this.id}`);
+        let response = await this.$axios.$get(config.apiPrefix + `/products/${this.id}`);
         this.product = response;
         //console.log(this.product.coverImage)
     },

@@ -14,6 +14,8 @@
 </template>
 
 <script>
+    import config from '../../config.js'
+
     export default {
         data() {
             return {
@@ -22,7 +24,7 @@
             }
         },
         async fetch() {
-            let response = await this.$axios.$get('https://site202114.tw.cs.unibo.it/v1/products/');
+            let response = await this.$axios.$get(config.apiPrefix + '/products/');
             for(var product of response.results) {
                 this.products.push(product.id);
             }
@@ -34,7 +36,7 @@
                 console.log(input)
                 const params = new URLSearchParams();
                 params.append('keywords', input);
-                let response = await this.$axios.$get(`https://site202114.tw.cs.unibo.it/v1/products?keywords="Windsow"`, {keywords: "Windsor"});
+                let response = await this.$axios.$get(config.apiPrefix + `/products?keywords="Windsow"`, {keywords: "Windsor"});
                 console.log(response);
             }
         }

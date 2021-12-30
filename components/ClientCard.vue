@@ -18,6 +18,8 @@
 </template>
 
 <script>
+    import config from '../config'
+
     export default {
         props:{
             id: {
@@ -33,7 +35,7 @@
             }
         },
         async fetch() {
-            await this.$axios.$get(`https://site202114.tw.cs.unibo.it/v1/users/${this.id}`)
+            await this.$axios.$get(config.apiPrefix + `/users/${this.id}`)
                 .then(response => {
                     this.client = response
                 })

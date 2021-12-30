@@ -24,6 +24,8 @@
 </template>
 
 <script>
+    import config from '../config.js'
+
     export default {
         data() {
             return {
@@ -43,7 +45,7 @@
                 }
                 console.log(product);
 
-                this.$axios.post('https://site202114.tw.cs.unibo.it/v1/products/', {
+                this.$axios.post(config.apiPrefix + '/products/', {
                     name: this.name,
                     description: this.description
                 }).then(response => {

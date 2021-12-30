@@ -26,6 +26,8 @@
 </template>
 
 <script>
+    import config from '../config'
+
     export default {
         data() {
             return {
@@ -59,14 +61,15 @@
                     }
                     return error;
                 });
-                let response = await this.$axios.post("https://site202114.tw.cs.unibo.it/v1/auth/login", user);
-                console.log(response);
+                let response = await this.$axios.post(config.apiPrefix + "/auth/login", user);
+                console.log("login data: ", response);
                 if (response.status === 200) {
                     const userTokens = JSON.parse(JSON.stringify(response.data.tokens))
                     this.errorMessage = "Operation successful";
                     this.isInvalid = false;
                     localStorage.setItem("userTokens", JSON.stringify(userTokens));
                     localStorage.setItem("userEmail", user.email);
+                    localStorage.setItem("userId", response.data.user.id);
                     this.$axios.setToken(userTokens.access.token, "Bearer");
                     this.$store.commit("setUserTokens", userTokens);
                     console.log("user tokens:")

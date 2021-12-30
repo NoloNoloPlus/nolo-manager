@@ -63,6 +63,8 @@
 </template>
 
 <script>
+    import config from '../config.js';
+
     export default {
         props:{
             id: {
@@ -96,7 +98,7 @@
         },
         async fetch() {
             let response;
-            await this.$axios.$get(`https://site202114.tw.cs.unibo.it/v1/users/${this.id}`).then(resp => {
+            await this.$axios.$get(config.apiPrefix + `/users/${this.id}`).then(resp => {
                 this.client = resp
             }).catch(error => {
                 console.log(error)
@@ -114,7 +116,7 @@
                 delete client.address._id;
                 delete client.address.street._id;
                 console.log(client)
-                await this.$axios.$patch(`https://site202114.tw.cs.unibo.it/v1/users/${this.id}`, client).then(resp => {
+                await this.$axios.$patch(config.apiPrefix + `/users/${this.id}`, client).then(resp => {
                     this.isInvalid = false;
                     this.errorMessage = "User edited successfully";
                 }).catch(error => {
@@ -123,7 +125,7 @@
                 })
             },
             async removeClient() {
-                let response = await this.$axios.$delete(`https://site202114.tw.cs.unibo.it/v1/users/${this.id}`).catch(err => {
+                let response = await this.$axios.$delete(config.apiPrefix + `/users/${this.id}`).catch(err => {
                     console.log(err)
                 });
                 console.log(response)

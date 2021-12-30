@@ -42,6 +42,8 @@
 </template>
 
 <script>
+    import config from '../config'
+
     export default {
         data() {
             return {
@@ -73,7 +75,7 @@
                     address: this.address
                 };
                 //this.$emit("client-submit", client);
-                await this.$axios.$post(`https://site202114.tw.cs.unibo.it/v1/users/`, client).then(response => {
+                await this.$axios.$post(config.apiPrefix + `/users/`, client).then(response => {
                     console.log(response);
                 }).catch(error => {
                     console.log(error);

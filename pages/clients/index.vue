@@ -8,6 +8,8 @@
 </template>
 
 <script>
+    import config from '../../config.js';
+
     export default {
         data() {
             return {
@@ -27,7 +29,7 @@
         },
         async fetch() {
             let response;
-            await this.$axios.$get(`https://site202114.tw.cs.unibo.it/v1/users/`).then(resp => {
+            await this.$axios.$get(config.apiPrefix + `/users/`).then(resp => {
                 response = resp;
                 console.log(response);
                 for(var client of response.results) {
