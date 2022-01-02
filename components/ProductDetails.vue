@@ -1,8 +1,9 @@
 <template>
+    
     <c-flex w="80%" direction="column">
+        
         <div v-if="$fetchState.pending">fetching...</div>
 
-        <!-- MAIN ARTICLE INFO SECTION -->
         <c-flex v-else direction="column" align="center" mt="1em">
             <c-heading>{{ this.product.name }}</c-heading>
             <client-only>
@@ -16,10 +17,9 @@
                     :content="slide.content" />
             </vueper-slides>
 
-            <!-- QUOTE SECTION -->
             <c-box w="100%" bg="#eee">
                 <c-flex w="100%" justify="space-around" p="1em">
-                    <v-date-picker v-model="range" :attributes="attrs" :model-config="modelConfig" :masks="masks" @dayclick="onDayClick" is-range/>
+                    <v-date-picker id="picker" v-model="range" :attributes="attrs" :model-config="modelConfig" :masks="masks" @dayclick="onDayClick" is-range/>
                     <c-flex direction="column" align="center">
                         <c-text>Start date: {{parseDate(this.range.start)}}</c-text>
                         <c-text>End date: {{parseDate(this.range.end)}}</c-text>
@@ -31,40 +31,95 @@
                         <c-button v-else-if="this.quotePrice" variant-color="green" @click="createRental(quote)">Create rental</c-button>
                     </c-flex>
                 </c-flex>
-                <c-box v-if="this.quotePrice"></c-box>
+                
+                <c-box v-if="this.quotePrice">
                     <c-heading align="center">Breakdown</c-heading>
-                    <c-box v-for="(instance, i) in this.instances" :key="i" mt="1em">
-                        <c-box v-for="(dataRange, j) in instance.dateRanges" :key="j" mt="0.5em">
-                            <c-heading size="sm">Instance: {{instance.name}}</c-heading>
-                            <c-text>Status: {{instance.currentStatus}}</c-text>
-                            <c-text>From: {{(new Date(dataRange.from)).toLocaleDateString()}}</c-text>
-                            <c-text>To: {{(new Date(dataRange.to)).toLocaleDateString()}}</c-text>
-                            <c-text>Price per day: {{dataRange.price.$numberDecimal}}€</c-text>
-                            <c-box v-for="(discount, k) in dataRange.discounts" :key="k">
-                                <c-text>Discount name: {{discount.name}}</c-text>
-                                <c-text>Discount description: {{discount.description}}</c-text>
-                                <c-text>Discount type: {{discount.type}}</c-text>
-                                <c-text>Discount value: {{discount.value}}</c-text>
-                            </c-box>
+                    <c-box v-for="instance of this.quote.instances" v-bind:key="instance.id" p="1em">
+                        <c-text>Name: {{instance.name}}</c-text>
+                        <c-text>Status: {{instance.currentStatus}}</c-text>
+                        <c-text>Discounts:</c-text>
+                        <c-text v-for="discount in instance.discounts" v-bind:key="discount">{{discount}}</c-text>
+                        <c-box v-for="(dateRange, i) of instance.dateRanges" v-bind:key="i">
+                            <c-text>Period {{i}}</c-text>
+                            <c-text>from: {{dateRange.from}}</c-text>
+                            <c-text>to: {{dateRange.to}}</c-text>
+                            <c-text>price: {{dateRange.price}}</c-text>
+                            <c-text>period discounts: </c-text>
+                            <c-text v-for="discount in dateRange.discounts" v-bind:key="discount">{{discount}}</c-text>
                         </c-box>
                     </c-box>
                 </c-box>
+                
             </c-box>
             
-
-            <!-- INSTANCES SECTION -->
+            
             <c-heading>Instances</c-heading>
-            <c-box v-for="instance of this.instances" v-bind:key="instance.id" border-width="1px" p="1em" w="50%">
-                <c-text>{{instance.name}}</c-text>
+            <c-box v-for="instance of this.instances" v-bind:key="instance.id" border-width="1px" p="1em" w="100%">
+                <c-heading size="md">{{instance.name || "no name"}}</c-heading>
                 <c-box v-for="(avail, index) of instance.availability" v-bind:key="index">
-                    <c-text>availability:</c-text>
+                    <br>
+                    <c-heading size="sm">Period {{index}}</c-heading>
                     <c-text>from: {{avail.from}}</c-text>
                     <c-text>to: {{avail.to}}</c-text>
-                    <c-text>price: {{avail.price.$numberDecimal}}</c-text>
+                    <c-text>price: {{avail.price}}</c-text>
                 </c-box>
+                <br>
+                <c-button variant-color="orange" @click="openInstanceModal(instance.id)">Edit</c-button>
+                <c-button variant-color="red" @click="removeInstance(instance.id)">Remove</c-button>
+            
+                <c-modal :is-open="isModalOpen && instance && modalId == instance.id" :on-close="() => {isModalOpen = false}">
+                    
+                    <c-modal-content ref="content">
+                        <c-modal-header>Editing instance {{instance.id}}</c-modal-header>
+                        <c-modal-close-button />
+                        <c-modal-body>
+                            <c-form-control w="100%">
+                                <c-form-label for="name">Instance name</c-form-label>
+                                <c-input id="instanceName" type="text" v-model="instanceName" />
+                            </c-form-control>
+                            <br>
+                            
+                            <c-form-control w="100%">
+                                <c-form-label>Instance period</c-form-label>
+                                <c-select v-model="availNumber" placeholder="Select period">
+                                    <option v-for="(avail, i) of instance.availability" :value="i" v-bind:key="i">Period {{i}}</option>
+                                </c-select>
+                            </c-form-control>
+                            
+                            <c-form-control w="100%">
+                                <c-input-group>
+                                    <c-input-left-addon w="5em">From</c-input-left-addon>
+                                    <c-input id="instanceAvailFrom" type="text" v-model="instanceAvailFrom" />
+                                </c-input-group>
+                            </c-form-control>
+                            <c-form-control w="100%">
+                                <c-input-group>
+                                    <c-input-left-addon w="5em">To</c-input-left-addon>
+                                    <c-input id="instanceAvailTo" type="text" v-model="instanceAvailTo" />
+                                </c-input-group>
+                            </c-form-control>
+                            <c-form-control w="100%">
+                                <c-input-group>
+                                    <c-input-left-addon w="5em">Price</c-input-left-addon>
+                                    <c-input id="instanceAvailPrice" type="text" v-model="instanceAvailPrice" />
+                                </c-input-group>
+                            </c-form-control>
+                            
+                        </c-modal-body>
+                        <c-modal-footer>
+                        <c-button variant-color="blue" mr="3" @click="editInstance(instance.id)">
+                            Save
+                        </c-button>
+                        <c-button @click="() => {isModalOpen = false}">Cancel</c-button>
+                        </c-modal-footer>
+                    </c-modal-content>
+                    <c-modal-overlay />
+                    
+                </c-modal>
                 
-                <c-button variant-color="red" @click="removeInstance(avail.id)">Remove</c-button>
             </c-box>
+            <c-button variant-color="green" mb="0.5em" @click="addInstance()">Add</c-button>
+            
 
 
             <c-text>Updated at {{this.product.updatedAt}}</c-text>
@@ -76,7 +131,9 @@
             </c-form-control>
 
         </c-flex>
+        
     </c-flex>
+    
 </template>
 
 <script>
@@ -105,6 +162,19 @@
         },
         data() {
             return {
+                isModalOpen: false,
+                modalId: -1,
+                editingInstance: "",
+                instanceName: "",
+                instanceAvails: [{
+                    from: "",
+                    to: "",
+                    price: ""
+                }],
+                instanceAvailFrom: "",
+                instanceAvailTo: "",
+                instanceAvailPrice: 0,
+                availNumber: -1,
                 product: {
                     coverImage: ''
                 },
@@ -137,6 +207,22 @@
                 options: { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
             }
         },
+        watch: {
+            availNumber: function (newVal, oldVal) {
+                this.instanceAvailFrom = this.instanceAvails[newVal].from
+                this.instanceAvailTo = this.instanceAvails[newVal].to
+                this.instanceAvailPrice = this.instanceAvails[newVal].price
+            },
+            instanceAvailFrom: function (newVal, oldVal) {
+                this.editingInstance.availability[this.availNumber].from = newVal
+            },
+            instanceAvailTo: function (newVal, oldVal) {
+                this.editingInstance.availability[this.availNumber].to = newVal
+            },
+            instanceAvailPrice: function (newVal, oldVal) {
+                this.editingInstance.availability[this.availNumber].price = newVal
+            },
+        },
         async fetch() {
             let response = await this.$axios.$get(config.apiPrefix + `/products/${this.id}`);
             this.product = response;
@@ -155,17 +241,14 @@
             }
 
             const newInstances = [];
-            console.log('TESSST')
             console.log('Product: ', this.product)
             for (const [instanceId, instance] of Object.entries(this.product.instances)) {
                 newInstances.push({...instance, id: instanceId});
             }
 
-            this.instances = newInstances;
-            console.log('aaa')
-            console.log(this.instances)
+            this.instances = JSON.parse(JSON.stringify(newInstances)); // copies obj without ref
 
-            // non so perché rifaccio una get TODO sistemare
+            // NB lo slash alla fine
             let avails = await this.$axios.$get(config.apiPrefix + `/products/${this.id}/`);
 
             const nameToNumber = {}
@@ -184,12 +267,7 @@
 
                 const name = key;
 
-                console.log(value.availability)
-
-                console.log("debug")
-
                 for(const range of value.availability){
-                    console.log(range)
                     this.attrs.push({
                         key: name,
                         dot: this.colors[nameToNumber[name]],
@@ -204,9 +282,71 @@
                 }
             }
 
+            console.log("fetch ended")
+
         },
         fetchOnServer: false,
         methods:{
+            async refetch(){
+                console.log("inside refetching...")
+                let response = await this.$axios.$get(config.apiPrefix + `/products/${this.id}`);
+                this.product = response;
+                this.slides.push({
+                    title: '',
+                    content: '',
+                    image: this.product.coverImage
+                })
+                for (var image of this.product.otherImages) {
+                    //console.log(image)
+                    this.slides.push({
+                        title: '',
+                        content: '',
+                        image: image
+                    })
+                }
+
+                const newInstances = [];
+                console.log('Product: ', this.product)
+                for (const [instanceId, instance] of Object.entries(this.product.instances)) {
+                    newInstances.push({...instance, id: instanceId});
+                }
+
+                this.instances = newInstances;
+
+                // NB lo slash alla fine
+                let avails = await this.$axios.$get(config.apiPrefix + `/products/${this.id}/`);
+
+                const nameToNumber = {}
+
+                let i = 0
+                for (const [instanceName, instance] of Object.entries(avails)) {
+                    nameToNumber[instanceName] = i
+                    i++
+                }
+
+                for(const [key, value] of Object.entries(avails)){
+                    this.availabilites.push({
+                        id: key,
+                        ranges: value.availability
+                    })
+
+                    const name = key;
+
+                    for(const range of value.availability){
+                        this.attrs.push({
+                            key: name,
+                            dot: this.colors[nameToNumber[name]],
+                            dates: {
+                                start: range.from,
+                                end: range.to
+                            },
+                            popover: {
+                                label: name
+                            }
+                        })
+                    }
+                }
+            },
             parseDate(date){
                 return (new Date(date)).toISOString().split('T')[0]
             },
@@ -222,7 +362,7 @@
                 });
                 this.quote = quote;
                 this.quotePrice = productPrice(quote);
-                console.log(quote)
+                console.log("Quote: ", quote)
             },
             onDayClick() {
                 this.quotePrice = '';
@@ -234,12 +374,37 @@
                 console.log(response)
                 this.$router.push('/products')
             },
-            async removeInstance(id) {
-                let response = await this.$axios.$put(config.apiPrefix + `/products/${this.id}`, {
-                    action: 'remove'
-                }).catch(err => {
+            openInstanceModal(id) {
+                this.isModalOpen = true;
+                this.modalId = id;
+                this.editingInstance = this.product.instances[id];
+                this.instanceName = this.product.instances[id].name;
+                this.instanceAvails = Object.values(this.product.instances[id].availability);
+                this.availNumber = 0;
+            },
+            async editInstance(id) {
+                console.log("editing instance: ", id)
+                let modifiedProduct = this.product;
+
+                this.editingInstance.name = this.instanceName;
+
+                modifiedProduct.instances[id] = this.editingInstance;
+
+                delete modifiedProduct.id;
+
+                for(const [_, value] of Object.entries(modifiedProduct.instances)){
+                    delete value.id;
+                }
+
+                console.log("Modified product", modifiedProduct)
+
+                let response = await this.$axios.$put(config.apiPrefix + `/products/${this.id}`, modifiedProduct).catch(err => {
                     console.log(err)
                 });
+
+                this.isModalOpen = false;
+                this.instanceName = "";
+                this.refetch()
             },
             async createRental(quote) {
                 const formattedInstances = {};
@@ -268,6 +433,59 @@
 
                 let response = await this.$axios.$post(config.apiPrefix + '/rentals/', body)
                 console.log(response)
+            },
+            async addInstance() {
+                console.log("adding empty instance");
+                let modifiedProduct = this.product;
+                const instanceNum = Object.keys(modifiedProduct.instances).length;
+                var s = "000" + instanceNum;
+                const instanceId = "a"+s.substr(s.length-3);
+
+                modifiedProduct.instances[instanceId] = {
+                    name: 'New Instance',
+                    availability: [{
+                        from: '1970-01-01',
+                        to: '1970-01-01',
+                        price: 0
+                    }]
+                }
+
+                delete modifiedProduct.id;
+
+                for(const [_, value] of Object.entries(modifiedProduct.instances)){
+                    delete value.id;
+                }
+
+                console.log("Product with added instance", modifiedProduct)
+
+                let response = await this.$axios.$put(config.apiPrefix + `/products/${this.id}`, modifiedProduct).catch(err => {
+                    console.log(err)
+                });
+                console.log('Refetching... addInstance');
+                this.refetch()
+                console.log('Finished refetching addInstance');
+            },
+            async removeInstance(id) {
+                console.log("removing instance: ", id)
+                let modifiedProduct = this.product;
+                delete modifiedProduct.instances[id];
+
+                delete modifiedProduct.id;
+
+                for(const [_, value] of Object.entries(modifiedProduct.instances)){
+                    delete value.id;
+                }
+
+                console.log("Modified product", modifiedProduct)
+
+                let response = await this.$axios.$put(config.apiPrefix + `/products/${this.id}`, modifiedProduct).catch(err => {
+                    console.log(err)
+                });
+
+                console.log('Refetching... removeInstance');
+                this.refetch()
+                
+                console.log('Finished refetching removeInstance');
             }
         }
     }
@@ -278,6 +496,14 @@
     .vueperslide__image {
         background-size: contain;
         background-repeat: no-repeat;
+    }
+
+    #myodal {
+        z-index: 100 !important;
+    }
+
+    #picker {
+        z-index: 0;
     }
 
 </style>

@@ -21,7 +21,7 @@ function dateRangePrice(dateRange, discounted) {
     const to = new Date(dateRange.to)
 
     const nDays = Math.round((to.getTime() - from.getTime()) / _MS_PER_DAY) + 1;
-    let totalPrice = nDays * parseFloat(dateRange.price.$numberDecimal);
+    let totalPrice = nDays * parseFloat(dateRange.price);
 
     if (discounted) {
         totalPrice = applyDiscounts(totalPrice, dateRange.discounts)
@@ -45,7 +45,6 @@ function instancePrice(instance, discounted) {
 }
 
 function productPrice(product, discounted) {
-    console.log('Product:', product)
     let totalPrice = 0;
 
     for (const instance of Object.values(product.instances)) {
