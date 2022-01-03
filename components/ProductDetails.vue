@@ -28,7 +28,14 @@
                         <c-text v-if="this.quotePrice == ''"></c-text>
                         <c-text fontSize="6xl" v-else as="b" mt="0.5em">{{this.quotePrice}}€</c-text>
                         <c-button v-if="this.$store.state.userTokens == null" variant-color="green" disabled>Not Authenticated</c-button>
-                        <c-button v-else-if="this.quotePrice" variant-color="green" @click="createRental(quote)">Create rental</c-button>
+                        <c-box v-else-if="this.quotePrice">
+                            <c-form-control w="100%">
+                                <c-form-label for="clientEmail">Client email</c-form-label>
+                                <c-input id="clientEmail" type="text" v-model="clientEmail" />
+                            </c-form-control>
+                            <c-button variant-color="green" @click="createRental(quote)">Create rental</c-button>
+                        </c-box>
+                        
                     </c-flex>
                 </c-flex>
                 
@@ -166,6 +173,7 @@
                 modalId: -1,
                 editingInstance: "",
                 instanceName: "",
+                clientEmail: "",
                 instanceAvails: [{
                     from: "",
                     to: "",
@@ -421,13 +429,26 @@
                     }
                 }
 
+                let resp = await this.$axios.$get(config.apiPrefix +`/users?email=${encodeURI(this.clientEmail)}`).catch(err => {
+                    console.log(err)
+                });
+
+                console.log("resp: ", resp)
+
+                if(resp.results.length == 0) {
+                    alert("Email not found")
+                    return;
+                }
+
+                let id = resp.results[0].id;
+
                 const body = {
                     products: {
                         [this.id]: {
                             instances: formattedInstances
                         }
                     },
-                    userId: '61c46bc7067f2850986310d5', // Guglielmo Baudo, TODO: let the manager choose
+                    userId: id,
                     approvedBy: localStorage.getItem('userId')
                 }
 

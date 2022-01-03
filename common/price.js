@@ -52,7 +52,7 @@ function productPrice(product, discounted) {
     }
 
     if (discounted) {
-        totalPrice = applyDiscounts(totalPrice, instance.discounts)
+        totalPrice = applyDiscounts(totalPrice, product.discounts)
     }
 
     return totalPrice;
@@ -61,7 +61,7 @@ function productPrice(product, discounted) {
 function rentalPrice(rental, discounted) {
     let totalPrice = 0;
 
-    for (const product of rental.products) {
+    for (const product of Object.values(rental.products)) {
         totalPrice += productPrice(product, true)
     }
 
