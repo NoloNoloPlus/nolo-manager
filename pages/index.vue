@@ -1,35 +1,88 @@
 <template>
+
     <c-flex align="center" justify="center" direction="column">
-        <c-heading>Revenue by user</c-heading>
-        <BarChart :x="userRevenue.x" :y="userRevenue.y" :label="'Revenue by user'" :yPrecision="2"/>
-        <br>
-        <c-heading># of rentals by user</c-heading>
-        <BarChart :x="userRentals.x" :y="userRentals.y" :label="'Rentals by user'"/>
-        <br>
-        <c-heading>Revenue by products</c-heading>
-        <BarChart :x="productRevenue.x" :y="productRevenue.y" :label="'Revenue by product'" :yPrecision="2"/>
-        <br>
-        <c-heading># of rentals by product</c-heading>
-        <BarChart :x="productRentals.x" :y="productRentals.y" :label="'Rentals by product'"/>
-        <br>
-        <c-heading># of instances per product</c-heading>
-        <BarChart :x="productInstances.x" :y="productInstances.y" :label="'Instances per product'"/>
-        <br>
-        <c-heading>
-            Revenue by instances of 
-            <c-select v-model="selectedProductForInstanceRevenue" placeholder="Select Product">
-                <option v-for="product in products" v-bind:key="product.id" :value="product.id">{{ product.name }}</option>
-            </c-select>
-        </c-heading>
-        <BarChart :x="instanceRevenueForSelectedProduct.x" :y="instanceRevenueForSelectedProduct.y" :label="'Revenue by instance'" :yPrecision="2"/>
-        <br>
-        <c-heading>
-            # of rentals by instances of 
-            <c-select v-model="selectedProductForInstanceRentals" placeholder="Select Product">
-                <option v-for="product in products" v-bind:key="product.id" :value="product.id">{{ product.name }}</option>
-            </c-select>
-        </c-heading>
-        <BarChart :x="instanceRentalsForSelectedProduct.x" :y="instanceRentalsForSelectedProduct.y" :label="'Rentals by instance'"/>
+        <c-tabs is-fitted>
+    <c-tab-list>
+      <c-tab>Users stats</c-tab>
+      <c-tab>Products stats</c-tab>
+      <c-tab>Rentals stats</c-tab>
+      <c-tab>Employees stats</c-tab>
+    </c-tab-list>
+        
+    <c-tab-panels>
+      <c-tab-panel w="70vw">
+          <c-flex align="center" direction="column">
+            <c-heading>Revenue by user</c-heading>
+            <c-flex justify="center">
+                <BarChart :x="userRevenue.x" :y="userRevenue.y" :label="'Revenue by user'" :yPrecision="2"/>
+                <DoughnutChart :x="userRevenue.x" :y="userRevenue.y" :label="'Revenue by user'" :yPrecision="2"/>
+            </c-flex>
+            
+            <br>
+            <c-heading># of rentals by user</c-heading>
+            <c-flex justify="center">
+                <BarChart :x="userRentals.x" :y="userRentals.y" :label="'Rentals by user'"/>
+                <DoughnutChart :x="userRentals.x" :y="userRentals.y" :label="'Rentals by user'"/>
+            </c-flex>
+            
+            <br>
+          </c-flex>
+      </c-tab-panel>
+      <c-tab-panel w="70vw">
+        <c-flex align="center" direction="column">
+            <c-heading>Revenue by products</c-heading>
+            <BarChart :x="productRevenue.x" :y="productRevenue.y" :label="'Revenue by product'" :yPrecision="2"/>
+            <br>
+            <c-heading># of rentals by product</c-heading>
+            <BarChart :x="productRentals.x" :y="productRentals.y" :label="'Rentals by product'"/>
+            <br>
+            <c-heading># of instances per product</c-heading>
+            <BarChart :x="productInstances.x" :y="productInstances.y" :label="'Instances per product'"/>
+            <br>
+            <c-heading>
+                Revenue by instances of 
+                <c-select v-model="selectedProductForInstanceRevenue" placeholder="Select Product">
+                    <option v-for="product in products" v-bind:key="product.id" :value="product.id">{{ product.name }}</option>
+                </c-select>
+            </c-heading>
+            <BarChart :x="instanceRevenueForSelectedProduct.x" :y="instanceRevenueForSelectedProduct.y" :label="'Revenue by instance'" :yPrecision="2"/>
+            <br>
+            <c-heading>
+                # of rentals by instances of 
+                <c-select v-model="selectedProductForInstanceRentals" placeholder="Select Product">
+                    <option v-for="product in products" v-bind:key="product.id" :value="product.id">{{ product.name }}</option>
+                </c-select>
+            </c-heading>
+            <BarChart :x="instanceRentalsForSelectedProduct.x" :y="instanceRentalsForSelectedProduct.y" :label="'Rentals by instance'"/>
+            <br>
+            <c-heading>
+                Instance status per product
+                <c-select v-model="selectedProductForInstanceStatus" placeholder="Select Product">
+                    <option v-for="product in products" v-bind:key="product.id" :value="product.id">{{ product.name }}</option>
+                </c-select>
+            </c-heading>
+            <BarChart :x="instanceStatusForSelectedProduct.x" :y="instanceStatusForSelectedProduct.y" :label="'Instance status'"/>
+        </c-flex>
+      </c-tab-panel>
+      <c-tab-panel w="70vw">
+        <c-flex align="center" direction="column">
+            <c-heading>Revenue by rentals</c-heading>
+            <BarChart :x="rentalRevenue.x" :y="rentalRevenue.y" :label="'Revenue by rental'" :yPrecision="2"/>
+            <br>
+            <c-heading>Active rentals by date</c-heading>
+            <LineChart :x="activeRentalsByDay.x" :y="activeRentalsByDay.y" :label="'Active rentals by date'" :yPrecision="2" nDays="100"/>
+            <br>
+        </c-flex>
+      </c-tab-panel>
+      <c-tab-panel>
+        <c-flex align="center" direction="column">
+            <c-heading>Revenue by employee</c-heading>
+            <BarChart :x="rentalRevenueByApprover.x" :y="rentalRevenueByApprover.y" :label="'Revenue by employee'" :yPrecision="2"/> 
+            <br>
+        </c-flex>
+      </c-tab-panel>
+    </c-tab-panels>
+  </c-tabs>
     </c-flex>
 </template>
 
@@ -37,6 +90,7 @@
 
 import { instancePrice, productPrice, rentalPrice } from '../common/price'
 import config from '../config'
+import { format } from 'date-format-parse'
 
 export default {
     data() {
@@ -46,7 +100,8 @@ export default {
             errorMessage: '',
             userToName: {},
             selectedProductForInstanceRevenue: '',
-            selectedProductForInstanceRentals: ''
+            selectedProductForInstanceRentals: '',
+            selectedProductForInstanceStatus: ''
         }
     },
     computed: {
@@ -182,6 +237,79 @@ export default {
             const sortedInstanceNames = sortedInstances.map(instanceId => this.products[this.selectedProductForInstanceRentals].instances[instanceId].name || instanceId)
 
             return { x: sortedInstanceNames, y: sortedInstances.map(instanceId => rentals[instanceId])}
+        },
+        rentalRevenue: function () {
+            const revenue = {}
+            for (const rental of this.rentals) {
+                const discountedPrice = rentalPrice(rental)
+                if (!revenue[rental.id]) {
+                    revenue[rental.id] = 0
+                }
+
+                revenue[rental.id] += discountedPrice
+            }
+
+            const sortedRentals = Object.keys(revenue).sort((a, b) => revenue[b] - revenue[a])
+
+            return { x: sortedRentals, y: sortedRentals.map(rentalId => revenue[rentalId])}
+        },
+        instanceStatusForSelectedProduct: function () {
+            const status = {}
+
+            for (const productId of Object.keys(this.products)) {
+                if (productId === this.selectedProductForInstanceStatus) {
+                    for (const [instanceId, instance] of Object.entries(this.products[productId].instances)) {
+                        if (!status[instance.currentStatus]) {
+                            status[instance.currentStatus] = 0
+                        }
+
+                        status[instance.currentStatus] += 1
+                    }
+                    break;
+                }
+            }
+
+            const sortedStatuses = Object.keys(status).sort((a, b) => status[b] - status[a])
+
+            return { x: sortedStatuses, y: sortedStatuses.map(statusId => status[statusId])}
+        },
+        rentalRevenueByApprover: function() {
+            const revenue = {}
+            for (const rental of this.rentals) {
+                const discountedPrice = rentalPrice(rental)
+                if (!revenue[rental.approvedBy]) {
+                    revenue[rental.approvedBy] = 0
+                }
+
+                revenue[rental.approvedBy] += discountedPrice
+            }
+
+            const sortedRentals = Object.keys(revenue).sort((a, b) => revenue[b] - revenue[a])
+
+            return { x: sortedRentals, y: sortedRentals.map(approvedBy => revenue[approvedBy])}
+            
+        },
+        activeRentalsByDay: function () {
+            const activeRentals = {}
+
+            for (const rental of this.rentals) {
+                const { from, to } = this.rentalExtrema(rental)
+                console.log('from:', from, 'to:', to);
+
+                for (let date = from; date <= to; date.setDate(date.getDate() + 1)) {
+                    const dateString = format(date, 'YYYY-MM-DD')
+                    if (!activeRentals[dateString]) {
+                        activeRentals[dateString] = 0
+                    }
+
+                    activeRentals[dateString] += 1
+                }
+            }
+            
+            const dates = Object.keys(activeRentals).sort((a, b) => new Date(a) - new Date(b))
+            const rentals = dates.map(date => activeRentals[date])
+
+            return { x: dates, y: rentals }
         }
     },
     head() {
@@ -223,6 +351,24 @@ export default {
         
     },
     methods: {
+        rentalExtrema: function(rental) {
+            let from = null;
+            let to = null;
+            for (const product of Object.values(rental.products)) {
+                for (const instance of Object.values(product.instances)) {
+                    for (const dateRange of instance.dateRanges) {
+                        console.log('DateRange:', dateRange);
+                        if (from === null || dateRange.from < from) {
+                            from = new Date(dateRange.from)
+                        }
+                        if (to === null || dateRange.to > to) {
+                            to = new Date(dateRange.to)
+                        }
+                    }
+                }
+            }
+            return { from, to }
+        },
     }
 }
 

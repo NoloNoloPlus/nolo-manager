@@ -62,7 +62,24 @@
             
             <c-heading>Instances</c-heading>
             <c-box v-for="instance of this.instances" v-bind:key="instance.id" border-width="1px" p="1em" w="100%">
-                <c-heading size="md">{{instance.name || "no name"}}</c-heading>
+                <c-heading size="md">{{instance.name || "no name"}}
+                    <c-tag v-if="instance.currentStatus == 'new'" variant-color="vue" size="sm">
+                         {{instance.currentStatus}}
+                    </c-tag>
+                    <c-tag v-else-if="instance.currentStatus == 'worn'" variant-color="yellow" size="sm">
+                        {{instance.currentStatus}}
+                    </c-tag>
+                    <c-tag v-else-if="instance.currentStatus == 'broken'" variant-color="red" size="sm">
+                        {{instance.currentStatus}}
+                    </c-tag>
+                    <c-tag v-else-if="instance.currentStatus == 'repairing'" variant-color="orange" size="sm">
+                        {{instance.currentStatus}}
+                    </c-tag>
+                    <c-tag v-else-if="instance.currentStatus == 'obliterated'" variant-color="indigo" size="sm">
+                        {{instance.currentStatus}}
+                    </c-tag>
+                </c-heading>
+                
                 <c-box v-for="(avail, index) of instance.availability" v-bind:key="index">
                     <br>
                     <c-heading size="sm">Period {{index}}</c-heading>
@@ -83,6 +100,18 @@
                             <c-form-control w="100%">
                                 <c-form-label for="name">Instance name</c-form-label>
                                 <c-input id="instanceName" type="text" v-model="instanceName" />
+                            </c-form-control>
+                            <br>
+
+                            <c-form-control w="100%">
+                                <c-form-label for="name">Current status/condition</c-form-label>
+                                <c-select v-model="instanceStatus" placeholder="Select status/condition">
+                                    <option value="new">New</option>
+                                    <option value="worn">Worn</option>
+                                    <option value="broken">Broken</option>
+                                    <option value="repairing">Repairing</option>
+                                    <option value="obliterated">Obliterated</option>
+                                </c-select>
                             </c-form-control>
                             <br>
                             
@@ -173,6 +202,7 @@
                 modalId: -1,
                 editingInstance: "",
                 instanceName: "",
+                instanceStatus: "",
                 clientEmail: "",
                 instanceAvails: [{
                     from: "",
@@ -229,6 +259,9 @@
             },
             instanceAvailPrice: function (newVal, oldVal) {
                 this.editingInstance.availability[this.availNumber].price = newVal
+            },
+            instanceStatus: function (newVal, oldVal) {
+                this.editingInstance.currentStatus = newVal
             },
         },
         async fetch() {
@@ -387,6 +420,7 @@
                 this.modalId = id;
                 this.editingInstance = this.product.instances[id];
                 this.instanceName = this.product.instances[id].name;
+                this.instanceStatus = this.product.instances[id].currentStatus;
                 this.instanceAvails = Object.values(this.product.instances[id].availability);
                 this.availNumber = 0;
             },

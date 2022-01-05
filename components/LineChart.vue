@@ -1,9 +1,9 @@
 <script>
 
-import { Bar } from 'vue-chartjs'
+import { Line } from 'vue-chartjs'
 
 export default {
-  extends: Bar,
+  extends: Line,
   props: {
     x: {
       type: Array,
@@ -17,7 +17,7 @@ export default {
       type: String,
       required: true
     },
-    maxColumns: {
+    nDays: {
       type: Number,
       default: 10
     },
@@ -42,22 +42,12 @@ export default {
       if (this.x) {
         this.renderChart(
           {
-            labels: this.x.slice(0, this.maxColumns),
+            labels: this.x.slice(Math.max(0, this.x.length - this.nDays), this.nDays),
             datasets: [
               {
                 label: this.label,
-                backgroundColor: '#f87979',
-                data: this.y.slice(0, this.maxColumns),
-                backgroundColor: [
-                    'rgb(224, 26, 79)',
-                    'rgb(241, 89, 70)',
-                    'rgb(249, 194, 46)',
-                    'rgb(83, 179, 203)',
-                    'rgb(194, 211, 205)',
-                    'rgb(175, 191, 192)',
-                    'rgb(159, 164, 208)',
-                    'rgb(91, 140, 90)'
-                ]
+                data: this.y.slice(Math.max(0, this.x.length - this.nDays), this.nDays),
+                borderColor: '#3cba9f'
               }
             ]
           },

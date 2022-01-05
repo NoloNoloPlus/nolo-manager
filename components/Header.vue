@@ -3,6 +3,12 @@
         <NuxtLink to="/">
             <c-heading size="md">Home</c-heading>
         </NuxtLink>
+        <NuxtLink to="../">
+            <c-button size="md" variant-color="orange">Front office</c-button>
+        </NuxtLink>
+        <NuxtLink to="../backoffice/">
+            <c-button size="md" variant-color="orange">Back office</c-button>
+        </NuxtLink>
         <c-menu>
             <c-menu-button right-icon="chevron-down" variant-color="blue">
                 <c-heading size="md">Clients</c-heading>
@@ -64,6 +70,8 @@
 </template>
 
 <script>
+    import config from '../config.js'
+
     export default {
         data() {
             return {
@@ -72,14 +80,27 @@
         },
         beforeMount() {
             var userTokens = localStorage.getItem('userTokens')
+            const error = '';
             if (userTokens) {
-                userTokens = JSON.parse(userTokens)
-                console.log("setting user tokens by header")
-                console.log(userTokens)
-                this.$axios.setToken(userTokens.access.token, "Bearer");
-                this.$store.commit("setUserTokens", userTokens);
+                let response = this.$axios.$get(config.apiPrefix + '/rentals/').catch(err => {
+                    error = err;
+                    console.log(err);
+                });
+                if(error) {
+                    this.email = ""
+                    this.$router.push({
+                        path: `/login`,
+                    })
+                } else {
+                    userTokens = JSON.parse(userTokens)
+                    console.log("setting user tokens by header")
+                    console.log(userTokens)
+                    this.$axios.setToken(userTokens.access.token, "Bearer");
+                    this.$store.commit("setUserTokens", userTokens);
 
-                this.email = localStorage.getItem('userEmail')
+                    this.email = localStorage.getItem('userEmail')
+                }
+                
             }
         }
     }

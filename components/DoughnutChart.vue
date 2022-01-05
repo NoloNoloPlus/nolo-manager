@@ -1,9 +1,9 @@
 <script>
 
-import { Bar } from 'vue-chartjs'
+import { Doughnut } from 'vue-chartjs'
 
 export default {
-  extends: Bar,
+  extends: Doughnut,
   props: {
     x: {
       type: Array,
@@ -17,14 +17,11 @@ export default {
       type: String,
       required: true
     },
-    maxColumns: {
+    hoverOffset: {
       type: Number,
-      default: 10
+      required: false,
+      default: 4
     },
-    yPrecision: {
-      type: Number,
-      default: 0
-    }
   },
   watch: {
     x () {
@@ -42,12 +39,12 @@ export default {
       if (this.x) {
         this.renderChart(
           {
-            labels: this.x.slice(0, this.maxColumns),
+            labels: this.x,
             datasets: [
               {
                 label: this.label,
-                backgroundColor: '#f87979',
-                data: this.y.slice(0, this.maxColumns),
+                data: this.y,
+                hoverOffset: this.hoverOffset,
                 backgroundColor: [
                     'rgb(224, 26, 79)',
                     'rgb(241, 89, 70)',
@@ -68,25 +65,6 @@ export default {
               labels: {
                 fontColor: 'black'
               }
-            },
-            scales: {
-              yAxes: [
-                {
-                  ticks: {
-                    beginAtZero: true,
-                    min: 0,
-                    fontColor: 'black',
-                    precision: this.yPrecision
-                  }
-                }
-              ],
-              xAxes: [
-                {
-                  ticks: {
-                    fontColor: 'black'
-                  }
-                }
-              ]
             }
           }
         )

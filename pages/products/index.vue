@@ -36,7 +36,7 @@
                 console.log(input)
                 const params = new URLSearchParams();
                 params.append('keywords', input);
-                let response = await this.$axios.$get(config.apiPrefix + `/products?keywords="Windsow"`, {keywords: "Windsor"});
+                let response = await this.$axios.$get(config.apiPrefix + `/products?stars=${encodeURI(input)}`);
                 console.log(response);
             }
         }

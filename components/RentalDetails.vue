@@ -11,8 +11,13 @@
             <br>
             <c-box border-width="1px" p="3em" pt="1em">
                 <c-heading size="lg" mb="1em">Rented by: {{this.rental.userName}}</c-heading>
+                <c-stat border-width="1px" p="1em">
+                    <c-stat-label><c-stat-arrow type="increase" />Profit</c-stat-label>
+                    <c-stat-number>{{rentalPrice}}€</c-stat-number>
+                    <c-stat-helper-text>{{rentalDateRange}}</c-stat-helper-text>
+                </c-stat>
                 <c-box v-for="(product, id) of this.rental.products" v-bind:key="id">
-                    <c-heading size="md" align="center" mb="1em">{{product.name}}</c-heading>
+                    <c-heading size="md" align="center" mb="1em" mt="1em">{{product.name}}</c-heading>
                     <c-text>product discounts: {{product.discounts}}</c-text>
                     <br>
                     <c-box v-for="(instance, i) of product.instances" v-bind:key="i">
@@ -42,6 +47,8 @@
 <script>
 
 import config from '../config'
+import { rentalPrice } from '../common/price'
+import { format } from 'date-format-parse'
 
 export default {
     props: {
@@ -53,6 +60,38 @@ export default {
     data() {
         return {
             rental: {}
+        }
+    },
+    computed: {
+        rentalPrice: function() {
+            return rentalPrice(this.rental)
+        },
+        rentalDateRange: function() {
+            let minFrom = null
+            let maxTo = null
+
+            for (const productId of Object.keys(this.rental.products)) {
+                const product = this.rental.products[productId]
+
+                for (const instanceId of Object.keys(product.instances)) {
+                    const instance = product.instances[instanceId]
+
+                    for (const dateRange of instance.dateRanges) {
+                        const from = new Date(dateRange.from)
+                        const to = new Date(dateRange.to)
+
+                        if (minFrom === null || from < minFrom) {
+                            minFrom = from
+                        }
+
+                        if (maxTo === null || to > maxTo) {
+                            maxTo = to
+                        }
+                    }
+                }
+            }
+
+            return `${format(minFrom, 'DD MMM YYYY')} - ${format(maxTo, 'DD MMM YYYY')}`
         }
     },
     async fetch() {
