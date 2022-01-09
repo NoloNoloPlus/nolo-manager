@@ -19,7 +19,7 @@ export default {
     },
     maxColumns: {
       type: Number,
-      default: 10
+      default: 20
     },
     yPrecision: {
       type: Number,
