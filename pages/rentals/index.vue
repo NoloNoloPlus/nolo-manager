@@ -1,7 +1,7 @@
 <template>
     <c-box>
         <c-flex align="center" justify="center" wrap="wrap">
-            <RentalCard v-for="rental of rentals" v-bind:key="rental.id" :id="rental.id" v-on:click.native="viewRental(rental.id)"/>
+            <RentalCard v-for="rental of rentals" v-bind:key="rental.id" :id="rental.id"/>
         </c-flex>
         <c-alert v-if="errorMessage" status="error">{{this.errorMessage}}</c-alert>
     </c-box>
@@ -37,9 +37,7 @@
         },
         fetchOnServer: false,
         methods: {
-            viewRental(id) {
-                this.$router.push({path: '/rentals/'+id})
-            }
+            
         }
     }
 </script>
