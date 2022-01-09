@@ -6,9 +6,6 @@
 
         <c-flex v-else direction="column" align="center" mt="1em">
             <c-heading>{{ this.product.name }}</c-heading>
-            <client-only>
-                <star-rating :border-width="0" :item-size="20" :spacing="20" :read-only="true" :rating="this.product.stars" :increment="0.01"></star-rating>
-            </client-only>
             <c-text>{{this.product.description}}</c-text>
             <vueper-slides slide-image-inside style="width:100%;" fixed-height="10em" class="no-shadow"
                 :visible-slides="3" slide-multiple :gap="3" :slide-ratio="1 / 4" :dragging-distance="200"
@@ -42,17 +39,24 @@
                 <c-box v-if="this.quotePrice">
                     <c-heading align="center">Breakdown</c-heading>
                     <c-box v-for="instance of this.quote.instances" v-bind:key="instance.id" p="1em">
-                        <c-text>Name: {{instance.name}}</c-text>
+                        <c-heading as="h1" size="lg">- {{instance.name}}</c-heading>
                         <c-text>Status: {{instance.currentStatus}}</c-text>
-                        <c-text>Discounts:</c-text>
+                        <c-heading as="h3" size="md">Discounts:</c-heading>
                         <c-text v-for="discount in instance.discounts" v-bind:key="discount">{{discount}}</c-text>
+                        <c-text v-if="instance.discounts.length == 0">No discounts</c-text>
                         <c-box v-for="(dateRange, i) of instance.dateRanges" v-bind:key="i">
-                            <c-text>Period {{i}}</c-text>
+                            <c-heading as="h3" size="md" mt="1em">Period {{i}}</c-heading>
                             <c-text>from: {{dateRange.from}}</c-text>
                             <c-text>to: {{dateRange.to}}</c-text>
-                            <c-text>price: {{dateRange.price}}</c-text>
-                            <c-text>period discounts: </c-text>
-                            <c-text v-for="discount in dateRange.discounts" v-bind:key="discount">{{discount}}</c-text>
+                            <c-text>price: {{dateRange.price}}€</c-text>
+                            <c-heading as="h4" size="sm" mt="0.5em">Period discounts: </c-heading>
+                            <c-box v-for="discount in dateRange.discounts" v-bind:key="discount">
+                                <c-text>{{discount.name}}</c-text>
+                                <c-text fontSize="xs">{{discount.description}}</c-text>
+                                <c-text>Value: {{discount.value}}</c-text>
+                                <c-text>Type: {{discount.type}}</c-text>
+                            </c-box>
+                            <c-text v-if="dateRange.discounts.length == 0">No discounts</c-text>
                         </c-box>
                     </c-box>
                 </c-box>
@@ -290,37 +294,34 @@
             this.instances = JSON.parse(JSON.stringify(newInstances)); // copies obj without ref
 
             // NB lo slash alla fine
-            let avails = await this.$axios.$get(config.apiPrefix + `/products/${this.id}/`);
+            let rentability = await this.$axios.$get(config.apiPrefix + `/products/${this.id}/rentability`);
+
+            console.log("rentability:",rentability)
 
             const nameToNumber = {}
-
             let i = 0
-            for (const [instanceName, instance] of Object.entries(avails)) {
-                nameToNumber[instanceName] = i
+            for (const [key, value] of Object.entries(rentability)) {
+                nameToNumber[key] = i
                 i++
             }
 
-            for(const [key, value] of Object.entries(avails)){
-                this.availabilites.push({
-                    id: key,
-                    ranges: value.availability
-                })
-
-                const name = key;
-
-                for(const range of value.availability){
+            for(const [key, value] of Object.entries(rentability)) {
+                for(const range of value) {
+                    console.log("period: ", range);
                     this.attrs.push({
-                        key: name,
-                        dot: this.colors[nameToNumber[name]],
+                        key: key,
+                        dot: this.colors[nameToNumber[key]],
                         dates: {
-                            start: range.from,
-                            end: range.to
+                            start: new Date(range.from),
+                            end: new Date(range.to)
                         },
                         popover: {
-                            label: name
+                            label: key
                         }
                     })
                 }
+                
+                
             }
 
             console.log("fetch ended")
@@ -328,66 +329,6 @@
         },
         fetchOnServer: false,
         methods:{
-            async refetch(){
-                console.log("inside refetching...")
-                let response = await this.$axios.$get(config.apiPrefix + `/products/${this.id}`);
-                this.product = response;
-                this.slides.push({
-                    title: '',
-                    content: '',
-                    image: this.product.coverImage
-                })
-                for (var image of this.product.otherImages) {
-                    //console.log(image)
-                    this.slides.push({
-                        title: '',
-                        content: '',
-                        image: image
-                    })
-                }
-
-                const newInstances = [];
-                console.log('Product: ', this.product)
-                for (const [instanceId, instance] of Object.entries(this.product.instances)) {
-                    newInstances.push({...instance, id: instanceId});
-                }
-
-                this.instances = newInstances;
-
-                // NB lo slash alla fine
-                let avails = await this.$axios.$get(config.apiPrefix + `/products/${this.id}/`);
-
-                const nameToNumber = {}
-
-                let i = 0
-                for (const [instanceName, instance] of Object.entries(avails)) {
-                    nameToNumber[instanceName] = i
-                    i++
-                }
-
-                for(const [key, value] of Object.entries(avails)){
-                    this.availabilites.push({
-                        id: key,
-                        ranges: value.availability
-                    })
-
-                    const name = key;
-
-                    for(const range of value.availability){
-                        this.attrs.push({
-                            key: name,
-                            dot: this.colors[nameToNumber[name]],
-                            dates: {
-                                start: range.from,
-                                end: range.to
-                            },
-                            popover: {
-                                label: name
-                            }
-                        })
-                    }
-                }
-            },
             parseDate(date){
                 return (new Date(date)).toISOString().split('T')[0]
             },
@@ -446,7 +387,7 @@
 
                 this.isModalOpen = false;
                 this.instanceName = "";
-                this.refetch()
+                this.$nuxt.refresh();
             },
             async createRental(quote) {
                 const formattedInstances = {};
@@ -488,6 +429,9 @@
 
                 let response = await this.$axios.$post(config.apiPrefix + '/rentals/', body)
                 console.log(response)
+                if(response.products) {
+                    this.$router.push('/rentals')
+                }
             },
             async addInstance() {
                 console.log("adding empty instance");
@@ -517,7 +461,7 @@
                     console.log(err)
                 });
                 console.log('Refetching... addInstance');
-                this.refetch()
+                this.$nuxt.refresh();
                 console.log('Finished refetching addInstance');
             },
             async removeInstance(id) {
@@ -538,7 +482,7 @@
                 });
 
                 console.log('Refetching... removeInstance');
-                this.refetch()
+                this.$nuxt.refresh();
                 
                 console.log('Finished refetching removeInstance');
             }
