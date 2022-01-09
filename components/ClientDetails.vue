@@ -1,7 +1,25 @@
 <template>
-    <c-box p="2em" w="60%">
-        <c-heading as="h4" size="md" pb="1em">Client {{client.id}}</c-heading>
-        <c-stack is-inline align="center">
+    <c-box p="2em" w="100%">
+        <c-heading as="h4" size="md" pb="1em">Client {{client.id}} <c-tag>{{client.role}}</c-tag></c-heading>
+        <c-stat v-if="this.client.role == 'user'" border-width="1px" p="1em">
+            <c-stat-label><c-stat-arrow type="increase" />Total own rentals profit</c-stat-label>
+            <c-stat-number>{{totalRevenue}}€</c-stat-number>
+            <c-stat-helper-text>nothing to see</c-stat-helper-text>
+        </c-stat>
+        <c-stat v-if="this.client.role != 'user'" border-width="1px" p="1em">
+            <c-stat-label><c-stat-arrow type="increase" />Total approved rentals profit</c-stat-label>
+            <c-stat-number>{{totalApprovedRevenue}}€</c-stat-number>
+            <c-stat-helper-text>nothing to see</c-stat-helper-text>
+        </c-stat>
+        <c-heading v-if="this.ownRentals.length > 0" as="h2" size="md" align="center">Own rentals</c-heading>
+        <c-flex align="center" justify="center" wrap="wrap">
+            <RentalCard v-for="rental of ownRentals" v-bind:key="rental.id" :id="rental.id"/>
+        </c-flex>
+        <c-heading v-if="this.approvedRentals.length > 0" as="h2" size="md" align="center">Approved rentals</c-heading>
+        <c-flex align="center" justify="center" wrap="wrap">
+            <RentalCard v-for="rental of approvedRentals" v-bind:key="rental.id" :id="rental.id"/>
+        </c-flex>
+        <c-stack is-inline align="center" mt="2em">
             <c-avatar :name="client.firstName + ' ' + client.lastName" :src="client.avatar" size="lg"></c-avatar>
             <c-form-control w="100%">
                 <c-form-label for="avatar">Avatar</c-form-label>
@@ -64,6 +82,7 @@
 
 <script>
     import config from '../config.js';
+    import { rentalPrice } from '../common/price.js';
 
     export default {
         props:{
@@ -84,7 +103,11 @@
                     }
                 },
                 isInvalid: false,
-                errorMessage: ""
+                errorMessage: "",
+                ownRentals: {},
+                approvedRentals: {},
+                totalRevenue: 0,
+                totalApprovedRevenue: 0
             }
         },
         watch: {
@@ -95,15 +118,39 @@
                 },
                 deep: true
             }
+
         },
         async fetch() {
-            let response;
             await this.$axios.$get(config.apiPrefix + `/users/${this.id}`).then(resp => {
                 this.client = resp
             }).catch(error => {
                 console.log(error)
             })
-            console.log(response)
+
+            console.log("client", this.client)
+
+            await this.$axios.$get(config.apiPrefix + `/rentals?userId=${this.id}`).then(resp => {
+                this.ownRentals = resp.results
+            }).catch(error => {
+                console.log(error)
+            })
+
+            console.log("Own rentals", this.ownRentals);
+
+            for(let rental of this.ownRentals) {
+                this.totalRevenue += rentalPrice(rental)
+            }
+
+            await this.$axios.$get(config.apiPrefix + `/rentals?approvedBy=${this.id}`).then(resp => {
+                this.approvedRentals = resp.results
+            }).catch(error => {
+                console.log(error)
+            })
+
+            for(let rental of this.approvedRentals) {
+                this.totalApprovedRevenue += rentalPrice(rental)
+            }
+            
         },
         fetchOnServer: false,
         methods: {
