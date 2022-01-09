@@ -5,8 +5,8 @@
 
         <c-flex v-else direction="column" align="center" mt="1em">
             <c-heading size="sm">{{this.rental.id}}</c-heading>
-            <c-text>Status: {{(this.rental.closed) ? "closed" : "not closed"}}</c-text>
-            <c-button v-if="!this.rental.closed" variant-color="orange" @click="closeRental">Close</c-button>
+            <c-text>Status: {{this.rental.status}}</c-text>
+            <c-button v-if="this.rental.status != 'closed'" variant-color="orange" @click="closeRental">Close</c-button>
 
             <br>
             <c-box border-width="1px" p="3em" pt="1em">
@@ -36,9 +36,10 @@
                 </c-box>
             </c-box>
 
-            <c-text>Discounts: {{this.rental.discounts}}</c-text>
+            <c-text v-if="this.rental.discounts.length > 0">Discounts: {{this.rental.discounts}}</c-text>
 
             <c-text>Approved by: {{this.rental.approvedByName}}</c-text>
+            <c-button v-if="this.rental.approvedByName == '-'" variant-color="green" @click="approveRental">Approve</c-button>
             
         </c-flex>
     </c-flex>
@@ -100,6 +101,7 @@ export default {
         })
 
         this.rental = response
+        console.log("Rental:", this.rental)
 
         for (const productId of Object.keys(this.rental.products)) {
             const product = await this.$axios.$get(config.apiPrefix + `/products/${productId}`).catch(error => {
@@ -119,21 +121,37 @@ export default {
 
         this.rental.userName = user.firstName + ' ' + user.lastName
 
-        const approver = await this.$axios.$get(config.apiPrefix + `/users/${this.rental.approvedBy}`).catch(error => {
+        let approver;
+
+        if(this.rental.approvedBy) {
+            approver = await this.$axios.$get(config.apiPrefix + `/users/${this.rental.approvedBy}`).catch(error => {
             console.log(error)
         })
-
-        this.rental.approvedByName = approver.firstName + ' ' + approver.lastName
+        }
+        
+        if(approver) {
+            this.rental.approvedByName = approver.firstName + ' ' + approver.lastName
+        } else {
+            this.rental.approvedByName = '-'
+        }
     },
     fetchOnServer: false,
     methods: {
         async closeRental() {
             console.log("closing rental")
-            let response = await this.$axios.$put(config.apiPrefix + `/rentals/${this.rental.id}/`, {
-                closed: true
+            let response = await this.$axios.$post(config.apiPrefix + `/rentals/${this.rental.id}/close`).catch(error => {
+                console.log(error)
+            })
+            this.$nuxt.refresh();
+        },
+        async approveRental() {
+            console.log("approving rental")
+            let response = await this.$axios.$put(config.apiPrefix + `/rentals/${this.rental.id}`, {
+                approvedBy: localStorage.getItem('userId')
             }).catch(error => {
                 console.log(error)
             })
+            this.$nuxt.refresh();
         }
     }
 }

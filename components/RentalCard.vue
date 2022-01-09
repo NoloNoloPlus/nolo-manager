@@ -1,7 +1,8 @@
 <template>
-    <c-box border-width="1px" w="20em" rounded="md" p="2em" m="1em">
+    <c-box border-width="1px" w="20em" rounded="md" p="2em" m="1em" v-on:click.native="viewRental(rental.id)">
         <p v-if="$fetchState.pending">pending...</p>
         <div v-else>
+            <c-tag size="sm" :variant-color="statusTagColor(this.rental.status)">{{this.rental.status}}</c-tag>
             <c-heading size="xs">{{this.rental.id}}</c-heading>
             <c-heading size="sm">{{this.rental.products[Object.keys(this.rental.products)[0]].name}}</c-heading>
             <c-text>by user: {{this.rental.userName}}</c-text>
@@ -79,7 +80,24 @@
             //console.log(response);
             this.rental.approvedByName = approver.firstName + ' ' + approver.lastName
         },
-        fetchOnServer: false
+        fetchOnServer: false,
+        methods: {
+            viewRental(id) {
+                this.$router.push({path: '/rentals/'+id})
+            },
+            statusTagColor(status) {
+                switch (status) {
+                    case 'ready':
+                        return 'green'
+                    case 'active':
+                        return 'blue'
+                    case 'closed':
+                        return 'red'
+                    default:
+                        return 'primary'
+                }
+            }
+        }
 
     }
 </script>
