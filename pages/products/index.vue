@@ -36,7 +36,13 @@
                 console.log(input)
                 const params = new URLSearchParams();
                 params.append('keywords', input);
-                let response = await this.$axios.$get(config.apiPrefix + `/products?stars=${encodeURI(input)}`);
+                let response = await this.$axios.$get(config.apiPrefix + `/products?keywords=${encodeURI(input)}`);
+                if(response.results.length > 0) {
+                    this.products = [];
+                    for(var product of response.results) {
+                        this.products.push(product.id);
+                    }
+                }
                 console.log(response);
             }
         }
