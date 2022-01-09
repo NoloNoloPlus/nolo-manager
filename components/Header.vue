@@ -43,23 +43,9 @@
                 </NuxtLink>
             </c-menu-list>
         </c-menu>
-        <c-menu>
-            <c-menu-button right-icon="chevron-down" variant-color="indigo">
-                <c-heading size="md">Rentals</c-heading>
-            </c-menu-button>
-            <c-menu-list>
-                <NuxtLink to="/rentals">
-                    <c-menu-item>
-                        <c-heading size="sm">All rentals</c-heading>
-                    </c-menu-item>
-                </NuxtLink>
-                <NuxtLink to="/rentals/add">
-                    <c-menu-item>
-                        <c-heading size="sm">Add rental</c-heading>
-                    </c-menu-item>
-                </NuxtLink>
-            </c-menu-list>
-        </c-menu>
+       <NuxtLink to="/rentals">
+            <c-button size="md" variant-color="indigo">Rentals</c-button>
+        </NuxtLink>
         <NuxtLink to="/login">
             <c-heading v-if="this.$store.state.userTokens != null" size="sm" align="center">Logged: {{this.email}}</c-heading>
             <c-heading v-else size="md">Login</c-heading>
