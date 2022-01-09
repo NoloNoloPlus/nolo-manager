@@ -31,13 +31,23 @@
       <c-tab-panel w="70vw">
         <c-flex align="center" direction="column">
             <c-heading>Revenue by products</c-heading>
-            <BarChart :x="productRevenue.x" :y="productRevenue.y" :label="'Revenue by product'" :yPrecision="2"/>
+            <c-flex justify="center">
+                <BarChart :x="productRevenue.x" :y="productRevenue.y" :label="'Revenue by product'" :yPrecision="2"/>
+                <DoughnutChart :x="productRevenue.x" :y="productRevenue.y" :label="'Revenue by product'" :yPrecision="2"/>
+            </c-flex>
+            
             <br>
             <c-heading># of rentals by product</c-heading>
-            <BarChart :x="productRentals.x" :y="productRentals.y" :label="'Rentals by product'"/>
+            <c-flex justify="center">
+                <BarChart :x="productRentals.x" :y="productRentals.y" :label="'Rentals by product'"/>
+                <DoughnutChart :x="productRentals.x" :y="productRentals.y" :label="'Rentals by product'"/>
+            </c-flex>
             <br>
             <c-heading># of instances per product</c-heading>
-            <BarChart :x="productInstances.x" :y="productInstances.y" :label="'Instances per product'"/>
+            <c-flex justify="center">
+                <BarChart :x="productInstances.x" :y="productInstances.y" :label="'Instances per product'"/>
+                <DoughnutChart :x="productInstances.x" :y="productInstances.y" :label="'Instances per product'"/>
+            </c-flex>
             <br>
             <c-heading>
                 Revenue by instances of 
@@ -45,7 +55,10 @@
                     <option v-for="product in products" v-bind:key="product.id" :value="product.id">{{ product.name }}</option>
                 </c-select>
             </c-heading>
-            <BarChart :x="instanceRevenueForSelectedProduct.x" :y="instanceRevenueForSelectedProduct.y" :label="'Revenue by instance'" :yPrecision="2"/>
+            <c-flex justify="center">
+                <BarChart :x="instanceRevenueForSelectedProduct.x" :y="instanceRevenueForSelectedProduct.y" :label="'Revenue by instance'" :yPrecision="2"/>
+                <DoughnutChart :x="instanceRevenueForSelectedProduct.x" :y="instanceRevenueForSelectedProduct.y" :label="'Revenue by instance'" :yPrecision="2"/>
+            </c-flex>
             <br>
             <c-heading>
                 # of rentals by instances of 
@@ -53,7 +66,10 @@
                     <option v-for="product in products" v-bind:key="product.id" :value="product.id">{{ product.name }}</option>
                 </c-select>
             </c-heading>
-            <BarChart :x="instanceRentalsForSelectedProduct.x" :y="instanceRentalsForSelectedProduct.y" :label="'Rentals by instance'"/>
+            <c-flex justify="center">
+                <BarChart :x="instanceRentalsForSelectedProduct.x" :y="instanceRentalsForSelectedProduct.y" :label="'Rentals by instance'"/>
+                <DoughnutChart :x="instanceRentalsForSelectedProduct.x" :y="instanceRentalsForSelectedProduct.y" :label="'Rentals by instance'"/>
+            </c-flex>
             <br>
             <c-heading>
                 Instance status per product
@@ -61,23 +77,30 @@
                     <option v-for="product in products" v-bind:key="product.id" :value="product.id">{{ product.name }}</option>
                 </c-select>
             </c-heading>
-            <BarChart :x="instanceStatusForSelectedProduct.x" :y="instanceStatusForSelectedProduct.y" :label="'Instance status'"/>
+            <c-flex justify="center">
+                <BarChart :x="instanceStatusForSelectedProduct.x" :y="instanceStatusForSelectedProduct.y" :label="'Instance status'"/>
+                <DoughnutChart :x="instanceStatusForSelectedProduct.x" :y="instanceStatusForSelectedProduct.y" :label="'Instance status'"/>
+            </c-flex>
         </c-flex>
       </c-tab-panel>
       <c-tab-panel w="70vw">
         <c-flex align="center" direction="column">
             <c-heading>Revenue by rentals</c-heading>
             <BarChart :x="rentalRevenue.x" :y="rentalRevenue.y" :label="'Revenue by rental'" :yPrecision="2"/>
+            <DoughnutChart :x="rentalRevenue.x" :y="rentalRevenue.y" :label="'Revenue by rental'" :yPrecision="2"/>
             <br>
             <c-heading>Active rentals by date</c-heading>
             <LineChart :x="activeRentalsByDay.x" :y="activeRentalsByDay.y" :label="'Active rentals by date'" :yPrecision="2" nDays="100"/>
             <br>
         </c-flex>
       </c-tab-panel>
-      <c-tab-panel>
+      <c-tab-panel w="70vw">
         <c-flex align="center" direction="column">
             <c-heading>Revenue by employee</c-heading>
             <BarChart :x="rentalRevenueByApprover.x" :y="rentalRevenueByApprover.y" :label="'Revenue by employee'" :yPrecision="2"/> 
+            <br>
+            <c-heading>Rentals by employee</c-heading>
+            <BarChart :x="rentalsByApprover.x" :y="rentalsByApprover.y" :label="'Rentals by employee'"/>
             <br>
         </c-flex>
       </c-tab-panel>
@@ -288,6 +311,20 @@ export default {
 
             return { x: sortedRentals, y: sortedRentals.map(approvedBy => revenue[approvedBy])}
             
+        },
+        rentalsByApprover: function() {
+            const rentals = {}
+            for (const rental of this.rentals) {
+                if (!rentals[rental.approvedBy]) {
+                    rentals[rental.approvedBy] = 0
+                }
+
+                rentals[rental.approvedBy] += 1
+            }
+
+            const sortedRentals = Object.keys(rentals).sort((a, b) => rentals[b] - rentals[a])
+
+            return { x: sortedRentals, y: sortedRentals.map(approvedBy => rentals[approvedBy])}
         },
         activeRentalsByDay: function () {
             const activeRentals = {}
