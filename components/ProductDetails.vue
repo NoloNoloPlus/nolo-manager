@@ -1,5 +1,4 @@
 <template>
-
     <c-flex w="80%" direction="column">
 
         <div v-if="$fetchState.pending">fetching...</div>
@@ -262,6 +261,34 @@
                 }
 
                 return totalRevenue;
+            },
+            totalProfit: function() {
+                return Object.values(this.rentals).reduce((acc, rental) => acc + rentalPrice(rental, true), 0)
+            },
+            averageProfit: function() {
+                const productCount = Object.values(this.products).length
+
+                if (productCount === 0) {
+                    return 0
+                }
+
+                return this.totalProfit / productCount;
+            },
+            profitVsMean: function() {
+                if (averageProfit === 0) {
+                    return '0%'
+                }
+                const currentPrice = rentalPrice({ products: { [id] : product }, discounts: [] }, true)
+
+                const difference = (currentPrice - averageProfit) / averageProfit * 100
+
+                if (difference > 0) {
+                    return `+${difference}%`
+                } else if (difference < 0) {
+                    return `-${difference}%`
+                } else {
+                    return '0%'
+                }
             }
         },
         watch: {
