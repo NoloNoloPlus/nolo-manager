@@ -3,12 +3,12 @@
         <c-heading as="h4" size="md" pb="1em">Client {{client.id}} <c-tag>{{client.role}}</c-tag></c-heading>
         <c-stat v-if="this.client.role == 'user'" border-width="1px" p="1em">
             <c-stat-label><c-stat-arrow type="increase" />Total own rentals profit</c-stat-label>
-            <c-stat-number>{{totalRevenue}}€</c-stat-number>
+            <c-stat-number>{{formattedTotalRevenue}}</c-stat-number>
             <c-stat-helper-text>nothing to see</c-stat-helper-text>
         </c-stat>
         <c-stat v-if="this.client.role != 'user'" border-width="1px" p="1em">
             <c-stat-label><c-stat-arrow type="increase" />Total approved rentals profit</c-stat-label>
-            <c-stat-number>{{totalApprovedRevenue}}€</c-stat-number>
+            <c-stat-number>{{formattedTotalApprovedRevenue}}</c-stat-number>
             <c-stat-helper-text>nothing to see</c-stat-helper-text>
         </c-stat>
         <c-heading v-if="this.ownRentals.length > 0" as="h2" size="md" align="center">Own rentals</c-heading>
@@ -82,7 +82,7 @@
 
 <script>
     import config from '../config.js';
-    import { rentalPrice } from '../common/price.js';
+    import { rentalPrice, formatPrice } from '../common/price.js';
 
     export default {
         props:{
@@ -119,6 +119,14 @@
                 deep: true
             }
 
+        },
+        computed: {
+            formattedTotalRevenue() {
+                return formatPrice(this.totalRevenue);
+            },
+            formattedTotalApprovedRevenue() {
+                return formatPrice(this.totalApprovedRevenue);
+            }
         },
         async fetch() {
             await this.$axios.$get(config.apiPrefix + `/users/${this.id}`).then(resp => {

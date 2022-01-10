@@ -9,25 +9,43 @@
             <c-button v-if="this.rental.status != 'closed'" variant-color="orange" @click="closeRental">Close</c-button>
 
             <br>
-            <c-box border-width="1px" p="3em" pt="1em">
+            <c-box border-width="1px" p="3em" pt="1em" w="30em">
                 <c-heading size="lg" mb="1em">Rented by: {{this.rental.userName}}</c-heading>
                 <c-stat border-width="1px" p="1em">
                     <c-stat-label><c-stat-arrow type="increase" />Profit</c-stat-label>
-                    <c-stat-number>{{rentalPrice}}€</c-stat-number>
+                    <c-stat-number>{{formattedRentalPrice}}</c-stat-number>
                     <c-stat-helper-text>{{rentalDateRange}}</c-stat-helper-text>
                 </c-stat>
                 <c-box v-for="(product, id) of this.rental.products" v-bind:key="id">
                     <c-heading size="md" align="center" mb="1em" mt="1em">{{product.name}}</c-heading>
-                    <c-text>product discounts: {{product.discounts}}</c-text>
+                    <c-heading size="md" mb="1em">Product discounts:</c-heading>
+                    <c-box v-for="(discount, id) of product.discounts" v-bind:key="id" mb="1em" border-width="1px" p="1em">
+                        <c-heading size="md">- {{discount.name}}</c-heading>
+                        <c-heading size="sm">{{discount.description}}</c-heading>
+                        <c-text>Value: {{discount.value}}</c-text>
+                        <c-text>Type: {{discount.type}}</c-text>
+                    </c-box>
                     <br>
                     <c-box v-for="(instance, i) of product.instances" v-bind:key="i">
                         <c-heading size="sm">{{instance.name}}</c-heading>
-                        <c-text>instance discounts: {{instance.discounts}}</c-text>
+                        <c-heading size="md">Instance discounts</c-heading>
+                        <c-box v-for="(discount, id) of instance.discounts" v-bind:key="id" mb="1em" border-width="1px" p="1em">
+                            <c-heading size="md">- {{discount.name}}</c-heading>
+                            <c-heading size="sm">{{discount.description}}</c-heading>
+                            <c-text>Value: {{discount.value}}</c-text>
+                            <c-text>Type: {{discount.type}}</c-text>
+                        </c-box>
                         <c-box v-for="(dateRange, i) of instance.dateRanges" v-bind:key="i">
-                            <c-text>Date range {{i}}</c-text>
+                            <c-text>- Date range {{i}}</c-text>
                             <c-text>from: {{dateRange.from}}</c-text>
                             <c-text>to: {{dateRange.to}}</c-text>
-                            <c-text>date range discounts: {{dateRange.discounts}}</c-text>
+                            <c-heading size="md">Date range discounts</c-heading>
+                            <c-box v-for="(discount, id) of dateRange.discounts" v-bind:key="id" mb="1em" border-width="1px" p="1em">
+                                <c-heading size="md">- {{discount.name}}</c-heading>
+                                <c-heading size="sm">{{discount.description}}</c-heading>
+                                <c-text>Value: {{discount.value}}</c-text>
+                                <c-text>Type: {{discount.type}}</c-text>
+                            </c-box>
                         </c-box>
                         <hr>
                         <br>
@@ -48,7 +66,7 @@
 <script>
 
 import config from '../config'
-import { rentalPrice } from '../common/price'
+import { rentalPrice, formatPrice } from '../common/price'
 import { format } from 'date-format-parse'
 
 export default {
@@ -93,6 +111,9 @@ export default {
             }
 
             return `${format(minFrom, 'DD MMM YYYY')} - ${format(maxTo, 'DD MMM YYYY')}`
+        },
+        formattedRentalPrice: function() {
+            return formatPrice(this.rentalPrice)
         }
     },
     async fetch() {

@@ -335,7 +335,9 @@ export default {
 
             const sortedRentals = Object.keys(revenue).sort((a, b) => revenue[b] - revenue[a])
 
-            return { x: sortedRentals, y: sortedRentals.map(approvedBy => revenue[approvedBy])}
+            const sortedUserNames = sortedRentals.map(userId => this.userToName[userId] || userId)
+
+            return { x: sortedUserNames, y: sortedRentals.map(approvedBy => revenue[approvedBy])}
 
         },
         rentalsByApprover: function() {
@@ -350,7 +352,9 @@ export default {
 
             const sortedRentals = Object.keys(rentals).sort((a, b) => rentals[b] - rentals[a])
 
-            return { x: sortedRentals, y: sortedRentals.map(approvedBy => rentals[approvedBy])}
+            const sortedUserNames = sortedRentals.map(userId => this.userToName[userId] || userId)
+
+            return { x: sortedUserNames, y: sortedRentals.map(approvedBy => rentals[approvedBy])}
         },
         activeRentalsByDay: function () {
             const activeRentals = {}
@@ -455,6 +459,8 @@ export default {
         for (const user of response.results) {
             newUserToName[user.id] = user.firstName + ' ' + user.lastName
         }
+
+        newUserToName[null] = '[No approver]'
 
         this.userToName = newUserToName
 

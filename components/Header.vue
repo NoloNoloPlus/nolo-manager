@@ -74,12 +74,14 @@
         async beforeMount() {
             var userTokens = localStorage.getItem('userTokens')
             if (userTokens) {
+                /*
                 let response = await this.$axios.$get(config.apiPrefix + '/rentals/').catch(err => {
                     this.error = err;
                     console.log("Non sei un manager")
                     console.log(err);
                 });
-                console.log("response", response);
+                */
+                //console.log("response", response);
                 if(false) {
                     localStorage.clear();
                     this.email = ""

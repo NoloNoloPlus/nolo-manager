@@ -13,11 +13,25 @@
                     :content="slide.content" />
             </vueper-slides>
 
-            <c-stat border-width="1px" p="1em" mb="2em">
-                <c-stat-label><c-stat-arrow type="increase" />Total product profit</c-stat-label>
-                <c-stat-number>{{productRevenue}}</c-stat-number>
-                <c-stat-helper-text>nothing to see</c-stat-helper-text>
-            </c-stat>
+            <c-flex>
+                <c-stat border-width="1px" p="1em" mb="2em" w="18em" mr="2em">
+                    <c-stat-label><c-stat-arrow type="increase" />Total product profit</c-stat-label>
+                    <c-stat-number>{{productRevenue}}</c-stat-number>
+                    <c-stat-helper-text>nothing to see</c-stat-helper-text>
+                </c-stat>
+
+                <c-stat border-width="1px" p="1em" mb="2em" w="18em">
+                    <c-stat-label>
+                        <c-stat-arrow v-if="profitVsMean > 0" type="increase" />
+                        <c-stat-arrow v-else-if="profitVsMean < 0" type="decrease" />
+                        Avg. profit vs other products mean
+                    </c-stat-label>
+                    <c-stat-number>{{formatDifference(profitVsMean)}}</c-stat-number>
+                    <c-stat-helper-text>nothing to see</c-stat-helper-text>
+                </c-stat>
+            </c-flex>
+
+            
 
             <c-box w="100%" bg="#eee">
                 <c-flex w="100%" justify="space-around" p="1em">
@@ -43,11 +57,23 @@
 
                 <c-box v-if="this.quotePrice">
                     <c-heading align="center">Breakdown</c-heading>
+                    <c-heading size="md">Product discounts</c-heading>
+                    <c-box v-for="(discount, id) of this.quote.discounts" v-bind:key="id" mb="1em" border-width="1px" p="1em">
+                        <c-heading size="md">- {{discount.name}}</c-heading>
+                        <c-heading size="sm">{{discount.description}}</c-heading>
+                        <c-text>Value: {{discount.value}}</c-text>
+                        <c-text>Type: {{discount.type}}</c-text>
+                    </c-box>
                     <c-box v-for="instance of this.quote.instances" v-bind:key="instance.id" p="1em">
                         <c-heading as="h1" size="lg">- {{instance.name}}</c-heading>
                         <c-text>Status: {{instance.currentStatus}}</c-text>
                         <c-heading as="h3" size="md">Discounts:</c-heading>
-                        <c-text v-for="discount in instance.discounts" v-bind:key="discount">{{discount}}</c-text>
+                        <c-box v-for="(discount, id) of instance.discounts" v-bind:key="id" mb="1em" border-width="1px" p="1em">
+                            <c-heading size="md">- {{discount.name}}</c-heading>
+                            <c-heading size="sm">{{discount.description}}</c-heading>
+                            <c-text>Value: {{discount.value}}</c-text>
+                            <c-text>Type: {{discount.type}}</c-text>
+                         </c-box>
                         <c-text v-if="instance.discounts.length == 0">No discounts</c-text>
                         <c-box v-for="(dateRange, i) of instance.dateRanges" v-bind:key="i">
                             <c-heading as="h3" size="md" mt="1em">Period {{i}}</c-heading>
@@ -249,7 +275,9 @@
                     input: 'YYYY-MM-DD'
                 },
                 options: { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' },
-                rentals: {}
+                rentals: {},
+                allRentals: {},
+                products: {}
             }
         },
         computed: {
@@ -265,30 +293,40 @@
             totalProfit: function() {
                 return Object.values(this.rentals).reduce((acc, rental) => acc + rentalPrice(rental, true), 0)
             },
+            allRentalsProfit: function() {
+                return Object.values(this.allRentals).reduce((acc, rental) => acc + rentalPrice(rental, true), 0)
+            },
             averageProfit: function() {
-                const productCount = Object.values(this.products).length
+                const productCount = this.products.length
 
                 if (productCount === 0) {
                     return 0
                 }
 
-                return this.totalProfit / productCount;
+                let currentPrice = 0;
+
+                for(const rental of this.rentals) {
+                    currentPrice += rentalPrice(rental, true);
+                }
+                console.log("currentPrice", currentPrice)
+
+                return (this.allRentalsProfit - currentPrice) / (productCount - 1);
             },
             profitVsMean: function() {
-                if (averageProfit === 0) {
-                    return '0%'
+                if (this.averageProfit === 0) {
+                    return 0
                 }
-                const currentPrice = rentalPrice({ products: { [id] : product }, discounts: [] }, true)
 
-                const difference = (currentPrice - averageProfit) / averageProfit * 100
+                let currentPrice = 0;
 
-                if (difference > 0) {
-                    return `+${difference}%`
-                } else if (difference < 0) {
-                    return `-${difference}%`
-                } else {
-                    return '0%'
+                for(const rental of this.rentals) {
+                    currentPrice += rentalPrice(rental, true);
                 }
+                console.log("currentPrice", currentPrice)
+
+                const difference = (currentPrice - this.averageProfit) / this.averageProfit * 100 - 100;
+
+                return difference
             }
         },
         watch: {
@@ -349,7 +387,6 @@
 
             for(const [key, value] of Object.entries(rentability)) {
                 for(const range of value) {
-                    console.log("period: ", range);
                     this.attrs.push({
                         key: key,
                         dot: this.colors[nameToNumber[key]],
@@ -374,13 +411,19 @@
             let rentals = (await this.$axios.$get(config.apiPrefix + `/rentals`)).results;
 
             this.rentals = {}
+            this.allRentals = rentals;
+
+            console.log("all rentals:", this.allRentals)
 
             this.rentals = rentals.filter(rental => {
                 return Object.keys(rental.products)[0] == this.id
             })
 
             console.log("filtered rentals:", this.rentals)
-            
+
+            response = await this.$axios.$get(config.apiPrefix + `/products/`);
+            this.products = response.results;
+            console.log("products:", this.products)
         },
         fetchOnServer: false,
         methods:{
@@ -540,7 +583,14 @@
                 this.$nuxt.refresh();
 
                 console.log('Finished refetching removeInstance');
-            }
+            },
+            formatDifference(difference) {
+                if (difference > 0) {
+                    return `+${difference.toFixed(2)}%`
+                } else {
+                    return `${difference.toFixed(2)}%`
+                }
+            },
         }
     }
 
