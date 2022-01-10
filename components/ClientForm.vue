@@ -57,10 +57,10 @@
                         line1: "",
                         line2: ""
                     },
-                    city: "none",
-                    state: "none",
-                    zip: "none",
-                    country: "none"
+                    city: " ",
+                    state: " ",
+                    zip: " ",
+                    country: " "
                 }
             };
         },
