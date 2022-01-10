@@ -3,10 +3,10 @@
         <NuxtLink to="/">
             <c-heading size="md">Home</c-heading>
         </NuxtLink>
-        <NuxtLink to="../">
+        <NuxtLink to="https://site202114.tw.cs.unibo.it/">
             <c-button size="md" variant-color="orange">Front office</c-button>
         </NuxtLink>
-        <NuxtLink to="../back/">
+        <NuxtLink to="https://site202114.tw.cs.unibo.it/back">
             <c-button size="md" variant-color="orange">Back office</c-button>
         </NuxtLink>
         <c-menu>
