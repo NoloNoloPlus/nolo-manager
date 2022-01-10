@@ -4,9 +4,9 @@
         <c-form-control :is-invalid="isInvalid">
             <c-form-label for="username">Email</c-form-label>
             <c-input id="email" v-model="email" type="email" placeholder="Email" />
-            
+
         </c-form-control>
-        
+
         <c-form-control :is-invalid="isInvalid">
             <c-form-label for="password">Password</c-form-label>
             <c-input v-model="password" id="password" type="password" placeholder="Password" />
@@ -17,10 +17,10 @@
 
         <c-box mt="1em">
             <c-alert v-if="isInvalid" status="error">{{errorMessage}}</c-alert>
-            <c-alert v-if="!isInvalid && errorMessage != ''" status="success">Login successful</c-alert>    
-        </c-box>    
-        
-        
+            <c-alert v-if="!isInvalid && errorMessage != ''" status="success">Login successful</c-alert>
+        </c-box>
+
+
     </c-box>
 
 </template>
@@ -64,6 +64,12 @@
                 let response = await this.$axios.post(config.apiPrefix + "/auth/login", user);
                 console.log("login data: ", response);
                 if (response.status === 200) {
+                    console.log("response", response);
+                    if(!(response.data.user.role == "manager" || response.data.user.role == "admin")) {
+                        this.errorMessage = "Operation error: you are not authorized";
+                        this.isInvalid = true;
+                        return;
+                    }
                     const userTokens = JSON.parse(JSON.stringify(response.data.tokens))
                     this.errorMessage = "Operation successful";
                     this.isInvalid = false;

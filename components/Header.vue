@@ -47,7 +47,7 @@
             <c-button size="md" variant-color="indigo">Rentals</c-button>
         </NuxtLink>
         <NuxtLink to="/login">
-            <c-heading v-if="this.$store.state.userTokens != null" size="sm" align="center">Logged: {{this.email}}</c-heading>
+            <c-heading v-if="this.$store.state.userTokens != null" size="sm" align="center">Logged: {{comp_email}}</c-heading>
             <c-heading v-else size="md">Login</c-heading>
         </NuxtLink> 
 
@@ -61,18 +61,27 @@
     export default {
         data() {
             return {
-                email: ""
+                email: "",
+                response: "",
+                error: ""
             }
         },
-        beforeMount() {
+        computed: {
+            comp_email: function() {
+                return localStorage.getItem('userEmail')
+            }
+        },
+        async beforeMount() {
             var userTokens = localStorage.getItem('userTokens')
-            const error = '';
             if (userTokens) {
-                let response = this.$axios.$get(config.apiPrefix + '/rentals/').catch(err => {
-                    error = err;
+                let response = await this.$axios.$get(config.apiPrefix + '/rentals/').catch(err => {
+                    this.error = err;
+                    console.log("Non sei un manager")
                     console.log(err);
                 });
-                if(error) {
+                console.log("response", response);
+                if(false) {
+                    localStorage.clear();
                     this.email = ""
                     this.$router.push({
                         path: `/login`,
@@ -83,10 +92,8 @@
                     console.log(userTokens)
                     this.$axios.setToken(userTokens.access.token, "Bearer");
                     this.$store.commit("setUserTokens", userTokens);
-
                     this.email = localStorage.getItem('userEmail')
                 }
-                
             }
         }
     }
