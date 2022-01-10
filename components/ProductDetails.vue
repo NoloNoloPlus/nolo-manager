@@ -1,7 +1,7 @@
 <template>
-    
+
     <c-flex w="80%" direction="column">
-        
+
         <div v-if="$fetchState.pending">fetching...</div>
 
         <c-flex v-else direction="column" align="center" mt="1em">
@@ -13,6 +13,12 @@
                 <vueper-slide v-for="(slide, i) in slides" :key="i" :image="slide.image" :title="slide.title"
                     :content="slide.content" />
             </vueper-slides>
+
+            <c-stat border-width="1px" p="1em" mb="2em">
+                <c-stat-label><c-stat-arrow type="increase" />Total product profit</c-stat-label>
+                <c-stat-number>{{productRevenue}}€</c-stat-number>
+                <c-stat-helper-text>nothing to see</c-stat-helper-text>
+            </c-stat>
 
             <c-box w="100%" bg="#eee">
                 <c-flex w="100%" justify="space-around" p="1em">
@@ -32,10 +38,10 @@
                             </c-form-control>
                             <c-button variant-color="green" @click="createRental(quote)">Create rental</c-button>
                         </c-box>
-                        
+
                     </c-flex>
                 </c-flex>
-                
+
                 <c-box v-if="this.quotePrice">
                     <c-heading align="center">Breakdown</c-heading>
                     <c-box v-for="instance of this.quote.instances" v-bind:key="instance.id" p="1em">
@@ -60,10 +66,9 @@
                         </c-box>
                     </c-box>
                 </c-box>
-                
+
             </c-box>
-            
-            
+
             <c-heading>Instances</c-heading>
             <c-box v-for="instance of this.instances" v-bind:key="instance.id" border-width="1px" p="1em" w="100%">
                 <c-heading size="md">{{instance.name || "no name"}}
@@ -83,7 +88,7 @@
                         {{instance.currentStatus}}
                     </c-tag>
                 </c-heading>
-                
+
                 <c-box v-for="(avail, index) of instance.availability" v-bind:key="index">
                     <br>
                     <c-heading size="sm">Period {{index}}</c-heading>
@@ -94,9 +99,9 @@
                 <br>
                 <c-button variant-color="orange" @click="openInstanceModal(instance.id)">Edit</c-button>
                 <c-button variant-color="red" @click="removeInstance(instance.id)">Remove</c-button>
-            
+
                 <c-modal :is-open="isModalOpen && instance && modalId == instance.id" :on-close="() => {isModalOpen = false}">
-                    
+
                     <c-modal-content ref="content">
                         <c-modal-header>Editing instance {{instance.id}}</c-modal-header>
                         <c-modal-close-button />
@@ -118,14 +123,13 @@
                                 </c-select>
                             </c-form-control>
                             <br>
-                            
+
                             <c-form-control w="100%">
                                 <c-form-label>Instance period</c-form-label>
                                 <c-select v-model="availNumber" placeholder="Select period">
                                     <option v-for="(avail, i) of instance.availability" :value="i" v-bind:key="i">Period {{i}}</option>
                                 </c-select>
                             </c-form-control>
-                            
                             <c-form-control w="100%">
                                 <c-input-group>
                                     <c-input-left-addon w="5em">From</c-input-left-addon>
@@ -144,7 +148,6 @@
                                     <c-input id="instanceAvailPrice" type="text" v-model="instanceAvailPrice" />
                                 </c-input-group>
                             </c-form-control>
-                            
                         </c-modal-body>
                         <c-modal-footer>
                         <c-button variant-color="blue" mr="3" @click="editInstance(instance.id)">
@@ -154,12 +157,12 @@
                         </c-modal-footer>
                     </c-modal-content>
                     <c-modal-overlay />
-                    
+
                 </c-modal>
-                
+
             </c-box>
             <c-button variant-color="green" mb="0.5em" @click="addInstance()">Add</c-button>
-            
+
 
 
             <c-text>Updated at {{this.product.updatedAt}}</c-text>
@@ -171,9 +174,9 @@
             </c-form-control>
 
         </c-flex>
-        
+
     </c-flex>
-    
+
 </template>
 
 <script>
@@ -183,7 +186,7 @@
     } from 'vueperslides';
     import 'vueperslides/dist/vueperslides.css'
 
-    import { productPrice } from '../common/price'
+    import { productPrice, rentalPrice } from '../common/price'
 
     import config from '../config'
 
@@ -246,7 +249,19 @@
                 masks: {
                     input: 'YYYY-MM-DD'
                 },
-                options: { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+                options: { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' },
+                rentals: {}
+            }
+        },
+        computed: {
+            productRevenue: function() {
+                let totalRevenue = 0;
+
+                for (const rental of this.rentals) {
+                    totalRevenue += rentalPrice(rental, true);
+                }
+
+                return totalRevenue;
             }
         },
         watch: {
@@ -320,12 +335,25 @@
                         }
                     })
                 }
-                
-                
+
+
             }
 
             console.log("fetch ended")
 
+            // Rentals stats
+
+
+            let rentals = (await this.$axios.$get(config.apiPrefix + `/rentals`)).results;
+
+            this.rentals = {}
+
+            this.rentals = rentals.filter(rental => {
+                return Object.keys(rental.products)[0] == this.id
+            })
+
+            console.log("filtered rentals:", this.rentals)
+            
         },
         fetchOnServer: false,
         methods:{
@@ -483,7 +511,7 @@
 
                 console.log('Refetching... removeInstance');
                 this.$nuxt.refresh();
-                
+
                 console.log('Finished refetching removeInstance');
             }
         }

@@ -11,7 +11,7 @@ function applyContainsWeekendDiscount(price, dateRange, discount) {
 
             if (monday <= dateRange.to) {
                 // Apply discount
-                
+
                 // Sunday is free
                 price -= dateRange.price;
 
@@ -27,7 +27,7 @@ function applyContainsWeekendDiscount(price, dateRange, discount) {
 function applyContainsWeekendDiscounts(price, dateRange, discounts) {
     for (const discount of discounts) {
         if (discount.type === 'containsWeekend') {
-            price -= applyContainsWeekendDiscount(price, dateRange, discount);
+            price = applyContainsWeekendDiscount(price, dateRange, discount);
         }
     }
 

@@ -19,7 +19,7 @@ export default {
     },
     maxColumns: {
       type: Number,
-      default: 20
+      default: 50
     },
     yPrecision: {
       type: Number,
@@ -46,7 +46,6 @@ export default {
             datasets: [
               {
                 label: this.label,
-                backgroundColor: '#f87979',
                 data: this.y.slice(0, this.maxColumns),
                 backgroundColor: [
                     'rgb(224, 26, 79)',

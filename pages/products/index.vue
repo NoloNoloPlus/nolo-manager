@@ -6,22 +6,46 @@
                 <c-icon-button @click="search(searchInput)" variant-color="blue" aria-label="Search database" icon="arrow-forward" w="100%"/>
             </c-input-right-addon>
         </c-input-group>
-                <c-flex align="center" justify="center" wrap="wrap">
+        <c-flex>
+            <c-stat border-width="1px" p="1em" m="1em" w="16em">
+                <c-stat-label><c-stat-arrow type="increase" />Average profit per product</c-stat-label>
+                <c-stat-number>{{averageProfit}}€</c-stat-number>
+                <c-stat-helper-text>nothing to see</c-stat-helper-text>
+            </c-stat>
+            <c-stat border-width="1px" p="1em" m="1em" w="16em">
+                <c-stat-label><c-stat-arrow type="increase" />Total profit</c-stat-label>
+                <c-stat-number>{{totalProfit}}€</c-stat-number>
+                <c-stat-helper-text>nothing to see</c-stat-helper-text>
+            </c-stat>
+        </c-flex>
+        
+        
+        <c-flex align="center" justify="center" wrap="wrap">
             <ProductCard v-for="id of products" v-bind:key="id" :id="id"/>
         </c-flex>
     </c-flex>
-    
 </template>
 
 <script>
     import config from '../../config.js'
 
+    import { rentalPrice } from '../../common/price.js'
+
     export default {
         data() {
             return {
                 products: [],
-                searchInput: ""
+                searchInput: "",
+                rentals: [],
             }
+        },
+        computed: {
+            totalProfit() {
+                return this.rentals.reduce((acc, rental) => acc + rentalPrice(rental, true), 0)
+            },
+            averageProfit() {
+                return this.totalProfit / this.products.length
+            },
         },
         async fetch() {
             let response = await this.$axios.$get(config.apiPrefix + '/products/');
@@ -29,6 +53,8 @@
                 this.products.push(product.id);
             }
             console.log(this.products);
+
+            this.rentals = (await this.$axios.$get(config.apiPrefix + '/rentals/')).results;
         },
         fetchOnServer: false,
         methods: {
