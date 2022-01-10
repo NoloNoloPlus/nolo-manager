@@ -4,12 +4,12 @@
         <c-stat v-if="this.client.role == 'user'" border-width="1px" p="1em">
             <c-stat-label><c-stat-arrow type="increase" />Total own rentals profit</c-stat-label>
             <c-stat-number>{{formattedTotalRevenue}}</c-stat-number>
-            <c-stat-helper-text>nothing to see</c-stat-helper-text>
+            <c-stat-helper-text> </c-stat-helper-text>
         </c-stat>
         <c-stat v-if="this.client.role != 'user'" border-width="1px" p="1em">
             <c-stat-label><c-stat-arrow type="increase" />Total approved rentals profit</c-stat-label>
             <c-stat-number>{{formattedTotalApprovedRevenue}}</c-stat-number>
-            <c-stat-helper-text>nothing to see</c-stat-helper-text>
+            <c-stat-helper-text> </c-stat-helper-text>
         </c-stat>
         <c-heading v-if="this.ownRentals.length > 0" as="h2" size="md" align="center">Own rentals</c-heading>
         <c-flex align="center" justify="center" wrap="wrap">

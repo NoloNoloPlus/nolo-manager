@@ -17,7 +17,7 @@
                 <c-stat border-width="1px" p="1em" mb="2em" w="18em" mr="2em">
                     <c-stat-label><c-stat-arrow type="increase" />Total product profit</c-stat-label>
                     <c-stat-number>{{productRevenue}}</c-stat-number>
-                    <c-stat-helper-text>nothing to see</c-stat-helper-text>
+                    <c-stat-helper-text> </c-stat-helper-text>
                 </c-stat>
 
                 <c-stat border-width="1px" p="1em" mb="2em" w="18em">
@@ -27,7 +27,7 @@
                         Avg. profit vs other products mean
                     </c-stat-label>
                     <c-stat-number>{{formatDifference(profitVsMean)}}</c-stat-number>
-                    <c-stat-helper-text>nothing to see</c-stat-helper-text>
+                    <c-stat-helper-text> </c-stat-helper-text>
                 </c-stat>
             </c-flex>
 

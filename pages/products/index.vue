@@ -10,12 +10,12 @@
             <c-stat border-width="1px" p="1em" m="1em" w="16em">
                 <c-stat-label><c-stat-arrow type="increase" />Average profit per product</c-stat-label>
                 <c-stat-number>{{formattedAverageProfit}}</c-stat-number>
-                <c-stat-helper-text>nothing to see</c-stat-helper-text>
+                <c-stat-helper-text> </c-stat-helper-text>
             </c-stat>
             <c-stat border-width="1px" p="1em" m="1em" w="16em">
                 <c-stat-label><c-stat-arrow type="increase" />Total profit</c-stat-label>
                 <c-stat-number>{{formattedTotalProfit}}</c-stat-number>
-                <c-stat-helper-text>nothing to see</c-stat-helper-text>
+                <c-stat-helper-text> </c-stat-helper-text>
             </c-stat>
         </c-flex>
 
