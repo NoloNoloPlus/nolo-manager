@@ -6,7 +6,7 @@
         <NuxtLink to="../">
             <c-button size="md" variant-color="orange">Front office</c-button>
         </NuxtLink>
-        <NuxtLink to="../backoffice/">
+        <NuxtLink to="../back/">
             <c-button size="md" variant-color="orange">Back office</c-button>
         </NuxtLink>
         <c-menu>
