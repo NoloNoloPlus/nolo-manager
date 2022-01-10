@@ -3,13 +3,13 @@
         <c-heading>Back Office Login Form</c-heading>
         <c-form-control :is-invalid="isInvalid">
             <c-form-label for="username">Email</c-form-label>
-            <c-input id="email" v-model="email" type="email" placeholder="Email" />
+            <c-input id="email" v-model="email" type="email" placeholder="Email" @keyup.enter="login"/>
 
         </c-form-control>
 
         <c-form-control :is-invalid="isInvalid">
             <c-form-label for="password">Password</c-form-label>
-            <c-input v-model="password" id="password" type="password" placeholder="Password" />
+            <c-input v-model="password" id="password" type="password" placeholder="Password" @keyup.enter="login"/>
         </c-form-control>
         <c-form-control pt="1em">
             <c-button variant-color="blue" @click="login">Login</c-button>
