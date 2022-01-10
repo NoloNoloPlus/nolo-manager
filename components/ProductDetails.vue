@@ -16,7 +16,7 @@
 
             <c-stat border-width="1px" p="1em" mb="2em">
                 <c-stat-label><c-stat-arrow type="increase" />Total product profit</c-stat-label>
-                <c-stat-number>{{productRevenue}}€</c-stat-number>
+                <c-stat-number>{{productRevenue}}</c-stat-number>
                 <c-stat-helper-text>nothing to see</c-stat-helper-text>
             </c-stat>
 
@@ -186,7 +186,7 @@
     } from 'vueperslides';
     import 'vueperslides/dist/vueperslides.css'
 
-    import { productPrice, rentalPrice } from '../common/price'
+    import { productPrice, rentalPrice, formatPrice } from '../common/price'
 
     import config from '../config'
 
@@ -261,7 +261,7 @@
                     totalRevenue += rentalPrice(rental, true);
                 }
 
-                return totalRevenue;
+                return formatPrice(totalRevenue);
             }
         },
         watch: {

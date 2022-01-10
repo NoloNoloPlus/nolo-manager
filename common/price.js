@@ -116,10 +116,18 @@ function rentalPrice(rental, discounted) {
     return totalPrice;
 }
 
+const formatPrice = (price) => {
+    if (price === undefined || price === null || isNaN(price)) {
+        return '0.00 €'; // GREVE
+    }
+    return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+}
+
 export {
     applyContainsWeekendDiscount,
     dateRangePrice,
     instancePrice,
     productPrice,
-    rentalPrice
+    rentalPrice,
+    formatPrice
 }
