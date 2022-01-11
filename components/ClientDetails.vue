@@ -71,7 +71,7 @@
         </c-form-control>
         <c-form-control pt="1em">
             <c-button v-if="this.$store.state.userTokens == null" variant-color="red" disabled>Not Authenticated</c-button>
-            <c-button v-else variant-color="red" @click="removeProduct()">Remove user</c-button>
+            <c-button v-else variant-color="red" @click="removeClient()">Remove user</c-button>
         </c-form-control>
         <c-box mt="1em">
             <c-alert v-if="isInvalid" status="error">{{errorMessage}}</c-alert>
@@ -184,7 +184,7 @@
                     console.log(err)
                 });
                 console.log(response)
-                this.$router.push('/users')
+                this.$router.push('/clients')
             }
         }
     }
