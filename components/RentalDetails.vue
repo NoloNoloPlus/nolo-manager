@@ -83,7 +83,7 @@ export default {
     },
     computed: {
         rentalPrice: function() {
-            return rentalPrice(this.rental)
+            return rentalPrice(this.rental, true)
         },
         rentalDateRange: function() {
             let minFrom = null
