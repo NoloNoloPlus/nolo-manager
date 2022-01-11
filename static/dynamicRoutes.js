@@ -1,5 +1,5 @@
 module.exports = [
-    '/clients/[_id:id]',
-    '/products/[_id:id]',
-    '/rentals/[_id:id]'
+    '/clients/[id]',
+    '/products/[id]',
+    '/rentals/[id]'
 ]
