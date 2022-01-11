@@ -134,12 +134,14 @@ export default {
         userRevenue: function () {
             const revenue = {}
             for (const rental of this.rentals) {
-                const discountedPrice = rentalPrice(rental)
+                const discountedPrice = rentalPrice(rental, true)
                 const userId = rental.userId
 
                 if (!revenue[userId]) {
                     revenue[userId] = 0
                 }
+
+                console.log("discountedPrice", discountedPrice)
 
                 revenue[userId] += discountedPrice
             }
@@ -147,6 +149,9 @@ export default {
             const sortedUsers = Object.keys(revenue).sort((a, b) => revenue[b] - revenue[a])
 
             const sortedUserNames = sortedUsers.map(userId => this.userToName[userId] || userId)
+
+            console.log(sortedUserNames)
+            console.log(sortedUsers.map(userId => revenue[userId]))
 
             return { x: sortedUserNames, y: sortedUsers.map(userId => revenue[userId])}
         },

@@ -51,7 +51,6 @@
             <c-heading v-else size="md">Login</c-heading>
         </a>
 
-
     </c-flex>
 </template>
 
