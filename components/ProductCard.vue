@@ -6,7 +6,6 @@
             <c-heading as="h4" size="md">{{this.product.name}}</c-heading>
             <c-text as="i">{{this.product.description}}</c-text>
             <c-divider></c-divider>
-            <c-text>Altre info boh</c-text>
         </div>
     </c-box>
 </template>
