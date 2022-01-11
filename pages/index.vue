@@ -443,7 +443,7 @@ export default {
             title: "Home"
         }
     },
-    async fetch() {
+    async beforeMount() {
         let response = await this.$axios.$get(config.apiPrefix + `/rentals`).catch(error => {
             console.log(error)
         })

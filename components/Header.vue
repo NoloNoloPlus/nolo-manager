@@ -43,13 +43,13 @@
                 </a>
             </c-menu-list>
         </c-menu>
-       <NuxtLink to="/rentals">
+       <a href="https://site202114.tw.cs.unibo.it/manager/rentals">
             <c-button size="md" variant-color="indigo">Rentals</c-button>
-        </NuxtLink>
-        <NuxtLink to="/login">
+        </a>
+        <a href="https://site202114.tw.cs.unibo.it/manager/login">
             <c-heading v-if="this.$store.state.userTokens != null" size="sm" align="center">Logged: {{comp_email}}</c-heading>
             <c-heading v-else size="md">Login</c-heading>
-        </NuxtLink> 
+        </a>
 
 
     </c-flex>
