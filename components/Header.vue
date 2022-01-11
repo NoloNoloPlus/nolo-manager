@@ -1,8 +1,8 @@
 <template>
     <c-flex justify="space-around" align="center" h="3em">
-        <NuxtLink to="/">
+        <a href="https://site202114.tw.cs.unibo.it/manager/">
             <c-heading size="md">Home</c-heading>
-        </NuxtLink>
+        </a>
         <a href="https://site202114.tw.cs.unibo.it/">
             <c-button size="md" variant-color="orange">Front office</c-button>
         </a>
@@ -14,16 +14,16 @@
                 <c-heading size="md">Clients</c-heading>
             </c-menu-button>
             <c-menu-list>
-                <NuxtLink to="/clients">
+                <a href="https://site202114.tw.cs.unibo.it/manager/clients">
                     <c-menu-item>
                         <c-heading size="sm">All clients</c-heading>
                     </c-menu-item>
-                </NuxtLink>
-                <NuxtLink to="/clients/add">
+                </a>
+                <a href="https://site202114.tw.cs.unibo.it/manager/clients/add">
                     <c-menu-item>
                         <c-heading size="sm">Add client</c-heading>
                     </c-menu-item>
-                </NuxtLink>
+                </a>
             </c-menu-list>
         </c-menu>
         <c-menu>
@@ -31,16 +31,16 @@
                 <c-heading size="md">Products</c-heading>
             </c-menu-button>
             <c-menu-list>
-                <NuxtLink to="/products">
+                <a href="https://site202114.tw.cs.unibo.it/manager/products">
                     <c-menu-item>
                         <c-heading size="sm">All products</c-heading>
                     </c-menu-item>
-                </NuxtLink>
-                <NuxtLink to="/products/add">
+                </a>
+                <a href="https://site202114.tw.cs.unibo.it/manager/products/add">
                     <c-menu-item>
                         <c-heading size="sm">Add product</c-heading>
                     </c-menu-item>
-                </NuxtLink>
+                </a>
             </c-menu-list>
         </c-menu>
        <NuxtLink to="/rentals">
